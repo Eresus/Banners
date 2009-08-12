@@ -9,9 +9,10 @@
 *
 * @author: Mikhail Krasilnikov <mk@procreat.ru>
 * @author: dkDimon <dkdimon@mail.ru>
+* @author: ghost
 *
-* @version: 1.10
-* @modified: 2007-08-22
+* @version: 1.11
+* @modified: 2009-07-14
 */
 
 class TBanners extends TListContentPlugin {
@@ -114,12 +115,17 @@ class TBanners extends TListContentPlugin {
   #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
   function insert()
   {
-    global $db, $request;
+    global $Eresus, $db, $request;
 
     $item = GetArgs($db->fields($this->table['name']));
+
     $item['section'] = ':'.implode(':', arg('section')).':';
+
     if ($item['showTill'] == '') unset($item['showTill']);
+
+    $item = $Eresus->db->escape($item);
     $db->insert($this->table['name'], $item);
+
     $item['id'] = $db->getInsertedID();
     if (is_uploaded_file($_FILES['image']['tmp_name'])) {
       $filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
@@ -133,11 +139,12 @@ class TBanners extends TListContentPlugin {
   #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
   function update()
   {
-    global $db, $request;
+    global $Eresus, $db, $request;
 
     $item = $db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
     $old_file = $item['image'];
     $item = GetArgs($item);
+
     $item['section'] = ':'.implode(':', arg('section')).':';
     if ($item['showTill'] == '') unset($item['showTill']);
     if (arg('flushShowCount')) $item['shows'] = 0;
@@ -148,18 +155,24 @@ class TBanners extends TListContentPlugin {
       upload('image', $path.$filename);
       $item['image'] = $filename;
     }
+
+    $item = $Eresus->db->escape($item);
     $db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+
     sendNotify('Изменен баннер: '.$item['caption']);
     goto($request['arg']['submitURL']);
   }
   #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
   function toggle($id)
   {
-    global $db, $page, $request;
+    global $Eresus, $db, $page, $request;
 
     $item = $db->selectItem($this->table['name'], "`id`='".$id."'");
     $item['active'] = !$item['active'];
+
+    $item = $Eresus->db->escape($item);
     $db->updateItem($this->table['name'], $item, "`id`='".$id."'");
+
     sendNotify(($item['active']?admActivated:admDeactivated).': '.'<a href="'.str_replace('toggle','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
     goto($page->url());
   }
@@ -194,7 +207,7 @@ class TBanners extends TListContentPlugin {
         array ('type'=>'hidden','name'=>'action', 'value'=>'insert'),
         array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
         array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-        array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 31, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+        array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 31, 'comment' => 'Для вставки баннера используйте макрос <b>$(plgBanners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
         array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
         array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
         array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
@@ -235,7 +248,7 @@ class TBanners extends TListContentPlugin {
         array ('type' => 'hidden','name'=>'update', 'value'=>$item['id']),
         array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
         array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-        array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 15, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+        array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 15, 'comment' => 'Для вставки баннера используйте макрос <b>$(plgBanners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
         array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
         array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
         array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
@@ -252,20 +265,7 @@ class TBanners extends TListContentPlugin {
         array ('type' => 'memo', 'name' => 'html', 'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)', 'height' => '4'),
         array ('type' => 'divider'),
         array ('type' => 'checkbox', 'name' => 'flushShowCount', 'label' => 'Обнулить кол-во показов'),
-/*        array ('type' => 'edit', 'name' => 'caption', 'label' => 'Заголовок', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
-        array ('type' => 'listbox', 'name' => 'section[]', 'label' => 'Разделы', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-        array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Большие значения - больший приоритет', 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-        array ('type' => 'edit', 'name' => 'block', 'label' => 'Блок', 'width' => '100px', 'maxlength' => 31),
-        array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'value'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-        array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
-        array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов', 'width' => '100px', 'comment' => '0 - без ограничений', 'value'=>0, 'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-        array ('type' => 'memo', 'name' => 'html', 'label' => 'HTML-код', 'height' => '4'),
-        array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка', 'width'=>'50'),
-        array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%', 'maxlength' => '255'),
-        array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать', 'items'=>array('в новом окне', 'в том же окне')),
-        array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
-        array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
-*/      ),
+      ),
       'buttons' => array('ok', 'apply', 'cancel'),
     );
 
@@ -302,26 +302,6 @@ class TBanners extends TListContentPlugin {
     return $result;
   }
   #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
-  /*function settings()
-  {
-  global $page;
-
-    $form = array(
-      'name'=>'SettingsForm',
-      'caption' => $this->title.' '.$this->version,
-      'width' => '500px',
-      'fields' => array (
-        array('type'=>'hidden','name'=>'update', 'value'=>$this->name),
-        array('type'=>'select','name'=>'displayMode','label'=>'Режим', 'items'=>array('Заменять макрос $(plgBanners)', 'Использовать SideBars')),
-        array('type'=>'edit','name'=>'caption','label'=>'Заголовок','width'=>'100px'),
-        array('type'=>'select','name'=>'SideBarsPanel','label'=>'Колонка SideBars', 'values'=>array('left', 'right'), 'items'=>array('Левая', 'Правая')),
-      ),
-      'buttons' => array('ok', 'apply', 'cancel'),
-    );
-    $result = $page->renderForm($form, $this->settings);
-    return $result;
-  }*/
-  #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
   # Обработчики событий
   #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
   function adminOnMenuRender()
@@ -333,17 +313,19 @@ class TBanners extends TListContentPlugin {
   #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
   function clientOnPageRender($text)
   {
-  global $db, $page, $request;
+  global $Eresus, $db, $page, $request;
 
     if (arg('banners-click')) {
       $item = $db->selectItem($this->name, "`id`='".arg('banners-click')."'");
       $item['clicks']++;
+
+      $item = $Eresus->db->escape($item);
       $db->updateItem($this->name, $item, "`id`='".$item['id']."'");
       goto($item['url']);
       exit;
     } else {
       # Ищем все места встаки баннеров
-      preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+      preg_match_all('/\$\(plgBanners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
       $delta = 0;
       foreach($blocks as $block) {
         $sql = "(`active`=1) AND (`section` LIKE '%:".$page->id.":%' OR `section` LIKE '%:all:%') AND (`block`='".$block[1][0]."') AND (`showFrom`<='".gettime()."') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '".gettime()."')";
@@ -373,7 +355,9 @@ class TBanners extends TListContentPlugin {
             $banner = StripSlashes($item['html']);
           }
           $item['shows']++;
-          $db->updateItem($this->name, $item, "`id`='".$item['id']."'");
+
+          $db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
+
           $text = substr_replace($text, $banner, $block[0][1]+$delta, strlen($block[0][0]));
           $delta += strlen($banner) - strlen($block[0][0]);
         }
