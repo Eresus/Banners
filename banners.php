@@ -303,7 +303,7 @@ class TBanners extends TListContentPlugin {
 				array ('type'=>'hidden','name'=>'action', 'value'=>'insert'),
 				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
 				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 31, 'comment' => 'Для вставки баннера используйте макрос <b>$(plgBanners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 31, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
 				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
 				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
 				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
@@ -349,7 +349,7 @@ class TBanners extends TListContentPlugin {
 				array ('type' => 'hidden','name'=>'update', 'value'=>$item['id']),
 				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
 				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 15, 'comment' => 'Для вставки баннера используйте макрос <b>$(plgBanners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 15, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
 				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
 				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
 				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
@@ -440,7 +440,7 @@ class TBanners extends TListContentPlugin {
 			exit;
 		} else {
 			# Ищем все места встаки баннеров
-			preg_match_all('/\$\(plgBanners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
 			foreach($blocks as $block) {
 				$sql = "(`active`=1) AND (`section` LIKE '%:".$page->id.":%' OR `section` LIKE '%:all:%') AND (`block`='".$block[1][0]."') AND (`showFrom`<='".gettime()."') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '".gettime()."')";
