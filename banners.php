@@ -69,7 +69,7 @@ class TBanners extends TListContentPlugin {
 	 * Версия
 	 * @var string
 	 */
-	var $version = '1.10';
+	var $version = '1.12';
 
 	/**
 	 * Описание
