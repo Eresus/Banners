@@ -431,13 +431,23 @@ class TBanners extends TListContentPlugin {
 	global $Eresus, $db, $page, $request;
 
 		if (arg('banners-click')) {
-			$item = $db->selectItem($this->name, "`id`='".arg('banners-click')."'");
-			$item['clicks']++;
+			$id = arg('banners-click');
+			if ($id != (string)((int)($id))) {
+				$page->httpError(404);
+			} else {
+				$item = $db->selectItem($this->name, "`id`='" . $id . "'");
+				if ($item) {
+					$item['clicks']++;
 
-			$item = $Eresus->db->escape($item);
-			$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
-			goto($item['url']);
-			exit;
+					$item = $Eresus->db->escape($item);
+					$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
+
+					goto($item['url']);
+					exit;
+				} else {
+					$page->httpError(404);
+				}
+			}
 		} else {
 			# »щем все места встаки баннеров
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
