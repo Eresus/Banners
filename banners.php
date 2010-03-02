@@ -6,15 +6,15 @@
  *
  * Система показа баннеров.
  *
- * @version: 1.12
+ * @version: 1.13
  *
- * @copyright   2005-2007, ProCreat Systems, http://procreat.ru/
- * @copyright   2007-2009, Eresus Group, http://eresus.ru/
- * @license     http://www.gnu.org/licenses/gpl.txt  GPL License 3
- * @author      Mikhail Krasilnikov <mk@procreat.ru>
- * @author      БерсЪ <bersz@procreat.ru>
- * @author      dkDimon <dkdimon@mail.ru>
- * @author      ghost
+ * @copyright 2005, ProCreat Systems, http://procreat.ru/
+ * @copyright 2007, Eresus Group, http://eresus.ru/
+ * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
+ * @author Mikhail Krasilnikov <mk@procreat.ru>
+ * @author БерсЪ <bersz@procreat.ru>
+ * @author dkDimon <dkdimon@mail.ru>
+ * @author ghost
  *
  * Данная программа является свободным программным обеспечением. Вы
  * вправе распространять ее и/или модифицировать в соответствии с
@@ -32,8 +32,7 @@
  * GNU с этой программой. Если Вы ее не получили, смотрите документ на
  * <http://www.gnu.org/licenses/>
  *
- * @package Plugins
- * @subpackage Banners
+ * @package Banners
  *
  * $Id$
  */
@@ -41,8 +40,7 @@
 /**
  * Класс плагина
  *
- * @package Plugins
- * @subpackage Banners
+ * @package Banners
  *
  */
 class TBanners extends TListContentPlugin {
@@ -69,7 +67,7 @@ class TBanners extends TListContentPlugin {
 	 * Версия
 	 * @var string
 	 */
-	var $version = '1.12';
+	var $version = '1.13a';
 
 	/**
 	 * Описание
