@@ -52,6 +52,12 @@ class TBanners extends TListContentPlugin {
 	var $name = 'banners';
 
 	/**
+	 * Требуемая версия ядра
+	 * @var string
+	 */
+	public $kernel = '2.12b';
+
+	/**
 	 * Название плагина
 	 * @var string
 	 */
@@ -208,7 +214,7 @@ class TBanners extends TListContentPlugin {
 			$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 		}
 		sendNotify('Добавлен баннер: '.$item['caption']);
-		goto($request['arg']['submitURL']);
+		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
 
@@ -239,7 +245,7 @@ class TBanners extends TListContentPlugin {
 		$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 
 		sendNotify('Изменен баннер: '.$item['caption']);
-		goto($request['arg']['submitURL']);
+		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
 
@@ -259,7 +265,7 @@ class TBanners extends TListContentPlugin {
 		$db->updateItem($this->table['name'], $item, "`id`='".$id."'");
 
 		sendNotify(($item['active']?admActivated:admDeactivated).': '.'<a href="'.str_replace('toggle','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
-		goto($page->url());
+		HTTP::redirect($page->url());
 	}
 	//-----------------------------------------------------------------------------
 
@@ -277,7 +283,7 @@ class TBanners extends TListContentPlugin {
 		if (!empty($item['image']) && file_exists($path.$item['image'])) unlink($path.$item['image']);
 		sendNotify(admDeleted.': '.'<a href="'.str_replace('delete','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
 		parent::delete($id);
-		goto($page->url());
+		HTTP::redirect($page->url());
 	}
 	//-----------------------------------------------------------------------------
 
@@ -440,9 +446,10 @@ class TBanners extends TListContentPlugin {
 					$item = $Eresus->db->escape($item);
 					$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
 
-					goto($item['url']);
-					exit;
-				} else {
+					HTTP::redirect($item['url']);
+				}
+					else
+				{
 					$page->httpError(404);
 				}
 			}
