@@ -434,7 +434,9 @@ class TBanners extends TListContentPlugin {
 	{
 	global $Eresus, $db, $page, $request;
 
-		if (arg('banners-click')) {
+		if (count($Eresus->request['arg']) != 1) {
+			$page->httpError(404);
+		} else if (arg('banners-click')) {
 			$id = arg('banners-click');
 			if ($id != (string)((int)($id))) {
 				$page->httpError(404);
