@@ -434,25 +434,27 @@ class TBanners extends TListContentPlugin {
 	{
 	global $Eresus, $db, $page, $request;
 
-		if (count($Eresus->request['arg']) != 1) {
-			$page->httpError(404);
-		} else if (arg('banners-click')) {
-			$id = arg('banners-click');
-			if ($id != (string)((int)($id))) {
+		if (arg('banners-click')) {
+			if (count($Eresus->request['arg']) != 1) {
 				$page->httpError(404);
 			} else {
-				$item = $db->selectItem($this->name, "`id`='" . $id . "'");
-				if ($item) {
-					$item['clicks']++;
-
-					$item = $Eresus->db->escape($item);
-					$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
-
-					HTTP::redirect($item['url']);
-				}
-					else
-				{
+				$id = arg('banners-click');
+				if ($id != (string)((int)($id))) {
 					$page->httpError(404);
+				} else {
+					$item = $db->selectItem($this->name, "`id`='" . $id . "'");
+					if ($item) {
+						$item['clicks']++;
+
+						$item = $Eresus->db->escape($item);
+						$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
+
+						HTTP::redirect($item['url']);
+					}
+						else
+					{
+						$page->httpError(404);
+					}
 				}
 			}
 		} else {
