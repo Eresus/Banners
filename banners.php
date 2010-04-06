@@ -203,7 +203,6 @@ class TBanners extends TListContentPlugin {
 
 		if ($item['showTill'] == '') unset($item['showTill']);
 
-		$item = $Eresus->db->escape($item);
 		$db->insert($this->table['name'], $item);
 
 		$item['id'] = $db->getInsertedID();
@@ -241,7 +240,6 @@ class TBanners extends TListContentPlugin {
 			$item['image'] = $filename;
 		}
 
-		$item = $Eresus->db->escape($item);
 		$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 
 		sendNotify('Изменен баннер: '.$item['caption']);
