@@ -6,15 +6,15 @@
  *
  * Система показа баннеров.
  *
- * @version: 1.12
+ * @version: 1.13
  *
- * @copyright   2005-2007, ProCreat Systems, http://procreat.ru/
- * @copyright   2007-2009, Eresus Group, http://eresus.ru/
- * @license     http://www.gnu.org/licenses/gpl.txt  GPL License 3
- * @author      Mikhail Krasilnikov <mk@procreat.ru>
- * @author      БерсЪ <bersz@procreat.ru>
- * @author      dkDimon <dkdimon@mail.ru>
- * @author      ghost
+ * @copyright 2005, ProCreat Systems, http://procreat.ru/
+ * @copyright 2007, Eresus Group, http://eresus.ru/
+ * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
+ * @author Mikhail Krasilnikov <mk@procreat.ru>
+ * @author БерсЪ <bersz@procreat.ru>
+ * @author dkDimon <dkdimon@mail.ru>
+ * @author ghost
  *
  * Данная программа является свободным программным обеспечением. Вы
  * вправе распространять ее и/или модифицировать в соответствии с
@@ -32,8 +32,7 @@
  * GNU с этой программой. Если Вы ее не получили, смотрите документ на
  * <http://www.gnu.org/licenses/>
  *
- * @package Plugins
- * @subpackage Banners
+ * @package Banners
  *
  * $Id$
  */
@@ -41,8 +40,7 @@
 /**
  * Класс плагина
  *
- * @package Plugins
- * @subpackage Banners
+ * @package Banners
  *
  */
 class TBanners extends TListContentPlugin {
@@ -52,6 +50,12 @@ class TBanners extends TListContentPlugin {
 	 * @var string
 	 */
 	var $name = 'banners';
+
+	/**
+	 * Требуемая версия ядра
+	 * @var string
+	 */
+	public $kernel = '2.12';
 
 	/**
 	 * Название плагина
@@ -69,7 +73,7 @@ class TBanners extends TListContentPlugin {
 	 * Версия
 	 * @var string
 	 */
-	var $version = '1.12';
+	var $version = '1.13';
 
 	/**
 	 * Описание
@@ -199,7 +203,6 @@ class TBanners extends TListContentPlugin {
 
 		if ($item['showTill'] == '') unset($item['showTill']);
 
-		$item = $Eresus->db->escape($item);
 		$db->insert($this->table['name'], $item);
 
 		$item['id'] = $db->getInsertedID();
@@ -210,7 +213,7 @@ class TBanners extends TListContentPlugin {
 			$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 		}
 		sendNotify('Добавлен баннер: '.$item['caption']);
-		goto($request['arg']['submitURL']);
+		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
 
@@ -237,11 +240,10 @@ class TBanners extends TListContentPlugin {
 			$item['image'] = $filename;
 		}
 
-		$item = $Eresus->db->escape($item);
 		$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 
 		sendNotify('Изменен баннер: '.$item['caption']);
-		goto($request['arg']['submitURL']);
+		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
 
@@ -261,7 +263,7 @@ class TBanners extends TListContentPlugin {
 		$db->updateItem($this->table['name'], $item, "`id`='".$id."'");
 
 		sendNotify(($item['active']?admActivated:admDeactivated).': '.'<a href="'.str_replace('toggle','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
-		goto($page->url());
+		HTTP::redirect($page->url());
 	}
 	//-----------------------------------------------------------------------------
 
@@ -279,7 +281,7 @@ class TBanners extends TListContentPlugin {
 		if (!empty($item['image']) && file_exists($path.$item['image'])) unlink($path.$item['image']);
 		sendNotify(admDeleted.': '.'<a href="'.str_replace('delete','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
 		parent::delete($id);
-		goto($page->url());
+		HTTP::redirect($page->url());
 	}
 	//-----------------------------------------------------------------------------
 
@@ -431,13 +433,28 @@ class TBanners extends TListContentPlugin {
 	global $Eresus, $db, $page, $request;
 
 		if (arg('banners-click')) {
-			$item = $db->selectItem($this->name, "`id`='".arg('banners-click')."'");
-			$item['clicks']++;
+			if (count($Eresus->request['arg']) != 1) {
+				$page->httpError(404);
+			} else {
+				$id = arg('banners-click');
+				if ($id != (string)((int)($id))) {
+					$page->httpError(404);
+				} else {
+					$item = $db->selectItem($this->name, "`id`='" . $id . "'");
+					if ($item) {
+						$item['clicks']++;
 
-			$item = $Eresus->db->escape($item);
-			$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
-			goto($item['url']);
-			exit;
+						$item = $Eresus->db->escape($item);
+						$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
+
+						HTTP::redirect($item['url']);
+					}
+						else
+					{
+						$page->httpError(404);
+					}
+				}
+			}
 		} else {
 			# Ищем все места встаки баннеров
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
