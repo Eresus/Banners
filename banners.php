@@ -43,13 +43,13 @@
  * @package Banners
  *
  */
-class TBanners extends TListContentPlugin {
-
+class TBanners extends TListContentPlugin
+{
 	/**
 	 * Имя плагина
 	 * @var string
 	 */
-	var $name = 'banners';
+	public $name = 'banners';
 
 	/**
 	 * Требуемая версия ядра
@@ -61,31 +61,31 @@ class TBanners extends TListContentPlugin {
 	 * Название плагина
 	 * @var string
 	 */
-	var $title = 'Баннеры';
+	public $title = 'Баннеры';
 
 	/**
 	 * Тип
 	 * @var string
 	 */
-	var $type = 'client,admin';
+	public $type = 'client,admin';
 
 	/**
 	 * Версия
 	 * @var string
 	 */
-	var $version = '1.13a';
+	public $version = '1.13a';
 
 	/**
 	 * Описание
 	 * @var string
 	 */
-	var $description = 'Система показа баннеров';
+	public $description = 'Система показа баннеров';
 
 	/**
 	 * Таблица АИ
 	 * @var array
 	 */
-	var $table = array (
+	public $table = array (
 		'name' => 'banners',
 		'key'=> 'id',
 		'sortMode' => 'id',
@@ -144,13 +144,19 @@ class TBanners extends TListContentPlugin {
 	 *
 	 * Производит регистрацию обработчиков событий.
 	 */
-	function TBanners()
+	function __construct()
 	{
 		global $plugins;
 
-		parent::TPlugin();
-		if (defined('CLIENTUI')) $plugins->events['clientOnPageRender'][] = $this->name;
-		else $plugins->events['adminOnMenuRender'][] = $this->name;
+		parent::__construct();
+		if (defined('CLIENTUI'))
+		{
+			$plugins->events['clientOnPageRender'][] = $this->name;
+		}
+		else
+		{
+			$plugins->events['adminOnMenuRender'][] = $this->name;
+		}
 	}
 	//-----------------------------------------------------------------------------
 
@@ -161,7 +167,10 @@ class TBanners extends TListContentPlugin {
 	{
 		parent::install();
 		umask(0000);
-		if (!file_exists(filesRoot.'data/'.$this->name)) mkdir(filesRoot.'data/'.$this->name, 0777);
+		if (!file_exists(filesRoot.'data/'.$this->name))
+		{
+			mkdir(filesRoot.'data/'.$this->name, 0777);
+		}
 	}
 	//-----------------------------------------------------------------------------
 
@@ -173,14 +182,17 @@ class TBanners extends TListContentPlugin {
 	 */
 	function menuBranch($owner = 0, $level = 0)
 	{
-	global $db;
+		global $db;
+
 		$result = array(array(), array());
 		$items = $db->select('`pages`', "(`access`>='".USER."')AND(`owner`='".$owner."') AND (`active`='1')", "`position`", false, "`id`,`caption`");
-		if (count($items)) foreach($items as $item) {
+		if (count($items)) foreach($items as $item)
+		{
 			$result[0][] = str_repeat('- ', $level).$item['caption'];
 			$result[1][] = $item['id'];
 			$sub = $this->menuBranch($item['id'], $level+1);
-			if (count($sub[0])) {
+			if (count($sub[0]))
+			{
 				$result[0] = array_merge($result[0], $sub[0]);
 				$result[1] = array_merge($result[1], $sub[1]);
 			}
@@ -206,7 +218,8 @@ class TBanners extends TListContentPlugin {
 		$db->insert($this->table['name'], $item);
 
 		$item['id'] = $db->getInsertedID();
-		if (is_uploaded_file($_FILES['image']['tmp_name'])) {
+		if (is_uploaded_file($_FILES['image']['tmp_name']))
+		{
 			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
 			upload('image', filesRoot.'data/'.$this->name.'/'.$filename);
 			$item['image'] = $filename;
@@ -230,9 +243,16 @@ class TBanners extends TListContentPlugin {
 		$item = GetArgs($item);
 
 		$item['section'] = ':'.implode(':', arg('section')).':';
-		if ($item['showTill'] == '') unset($item['showTill']);
-		if (arg('flushShowCount')) $item['shows'] = 0;
-		if (is_uploaded_file($_FILES['image']['tmp_name'])) {
+		if ($item['showTill'] == '')
+		{
+			unset($item['showTill']);
+		}
+		if (arg('flushShowCount'))
+		{
+			$item['shows'] = 0;
+		}
+		if (is_uploaded_file($_FILES['image']['tmp_name']))
+		{
 			$path = filesRoot.'data/'.$this->name.'/';
 			if (is_file($path.$old_file)) unlink($path.$old_file);
 			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
@@ -335,7 +355,7 @@ class TBanners extends TListContentPlugin {
 	 */
 	function edit()
 	{
-	global $page, $db, $request;
+		global $page, $db, $request;
 
 		$item = $db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
 		$item['section'] = explode(':', $item['section']);
@@ -383,7 +403,7 @@ class TBanners extends TListContentPlugin {
 	 */
 	function adminRender()
 	{
-	global $db, $page, $user, $request, $session;
+		global $db, $page, $user, $request, $session;
 
 		$result = '';
 		if (isset($request['arg']['id'])) {
@@ -417,7 +437,7 @@ class TBanners extends TListContentPlugin {
 	 */
 	function adminOnMenuRender()
 	{
-	global $page;
+		global $page;
 
 		$page->addMenuItem(admExtensions, array ('access'	=> EDITOR, 'link'	=> $this->name, 'caption'	=> $this->title, 'hint'	=> $this->description));
 	}
@@ -430,7 +450,7 @@ class TBanners extends TListContentPlugin {
 	 */
 	function clientOnPageRender($text)
 	{
-	global $Eresus, $db, $page, $request;
+		global $Eresus, $db, $page, $request;
 
 		if (arg('banners-click')) {
 			if (count($Eresus->request['arg']) != 1) {
