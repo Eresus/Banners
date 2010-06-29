@@ -6,7 +6,7 @@
  *
  * Система показа баннеров.
  *
- * @version: 1.13
+ * @version: 2.00
  *
  * @copyright 2005, ProCreat Systems, http://procreat.ru/
  * @copyright 2007, Eresus Group, http://eresus.ru/
@@ -41,21 +41,14 @@
  * Класс плагина
  *
  * @package Banners
- *
  */
-class TBanners extends TListContentPlugin
+class Banners extends Plugin
 {
-	/**
-	 * Имя плагина
-	 * @var string
-	 */
-	public $name = 'banners';
-
 	/**
 	 * Требуемая версия ядра
 	 * @var string
 	 */
-	public $kernel = '2.12';
+	public $kernel = '2.13';
 
 	/**
 	 * Название плагина
@@ -73,7 +66,7 @@ class TBanners extends TListContentPlugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '1.13a';
+	public $version = '2.00a';
 
 	/**
 	 * Описание
@@ -85,7 +78,7 @@ class TBanners extends TListContentPlugin
 	 * Таблица АИ
 	 * @var array
 	 */
-	public $table = array (
+	private $table = array (
 		'name' => 'banners',
 		'key'=> 'id',
 		'sortMode' => 'id',
@@ -146,41 +139,40 @@ class TBanners extends TListContentPlugin
 	 */
 	function __construct()
 	{
-		global $plugins;
-
 		parent::__construct();
+
 		if (defined('CLIENTUI'))
 		{
-			$plugins->events['clientOnPageRender'][] = $this->name;
+			$this->listenEvents('clientOnPageRender');
 		}
 		else
 		{
-			$plugins->events['adminOnMenuRender'][] = $this->name;
+			$this->listenEvents('adminOnMenuRender');
 		}
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
-	 *
+	 * Действия при установке плагина
 	 */
 	function install()
 	{
 		parent::install();
-		umask(0000);
-		if (!file_exists(filesRoot.'data/'.$this->name))
-		{
-			mkdir(filesRoot.'data/'.$this->name, 0777);
-		}
+
+		$this->createTable($this->table);
+
+		$this->mkdir();
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает ветку разделов сайта
 	 *
-	 * @param $owner
-	 * @param $level
-	 * @return string
+	 * @param int $owner[optional]
+	 * @param int $level[optional]
+	 * @return array
 	 */
-	function menuBranch($owner = 0, $level = 0)
+	private function menuBranch($owner = 0, $level = 0)
 	{
 		global $db;
 
@@ -202,10 +194,11 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Добавляет баннер в БД
 	 *
-	 * @return unknown_type
+	 * @return void
 	 */
-	function insert()
+	private function insert()
 	{
 		global $Eresus, $db, $request;
 
@@ -231,10 +224,10 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 *
-	 * @return unknown_type
+	 * Обновляет баннер в БД
+	 * @return void
 	 */
-	function update()
+	private function update()
 	{
 		global $Eresus, $db, $request;
 
@@ -254,8 +247,12 @@ class TBanners extends TListContentPlugin
 		if (is_uploaded_file($_FILES['image']['tmp_name']))
 		{
 			$path = filesRoot.'data/'.$this->name.'/';
-			if (is_file($path.$old_file)) unlink($path.$old_file);
-			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
+			if (is_file($path.$old_file))
+			{
+				unlink($path.$old_file);
+			}
+			$filename = 'banner' . $item['id'] .
+				substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
 			upload('image', $path.$filename);
 			$item['image'] = $filename;
 		}
@@ -268,11 +265,12 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Переключает активность баннера
 	 *
-	 * @param $id
-	 * @return unknown_type
+	 * @param int $id
+	 * @return void
 	 */
-	function toggle($id)
+	private function toggle($id)
 	{
 		global $Eresus, $db, $page, $request;
 
@@ -288,26 +286,35 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Удаляет баннер
 	 *
-	 * @param $id
-	 * @return unknown_type
+	 * @param int $id
+	 * @return void
 	 */
-	function delete($id)
+	private function delete($id)
 	{
-		global $db, $page, $request;
+		global $db, $page, $request, $Eresus;
 
 		$item = $db->selectItem($this->table['name'], "`id`='".$id."'");
 		$path = dataFiles.$this->name.'/';
-		if (!empty($item['image']) && file_exists($path.$item['image'])) unlink($path.$item['image']);
+		if (
+			!empty($item['image']) &&
+			file_exists($path.$item['image'])
+		)
+		{
+			unlink($path.$item['image']);
+		}
 		sendNotify(admDeleted.': '.'<a href="'.str_replace('delete','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
-		parent::delete($id);
-		HTTP::redirect($page->url());
+		$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."`='".$id."'");
+		$Eresus->db->delete($this->table['name'], "`".$this->table['key']."`='".$id."'");
+		HTTP::redirect(str_replace('&amp;', '&', $page->url()));
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает диалог добавления баннера
 	 *
-	 * @return unknown_type
+	 * @return string  HTML
 	 */
 	function create()
 	{
@@ -320,26 +327,49 @@ class TBanners extends TListContentPlugin
 		$form = array(
 			'name' => 'formCreate',
 			'caption' => 'Добавить баннер',
-			'width' => '95%',
+			'width' => '600px',
 			'fields' => array (
 				array ('type'=>'hidden','name'=>'action', 'value'=>'insert'),
-				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
-				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 31, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов', 'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0, 'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
-				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать', 'default' => true),
+				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+					'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
+					'errormsg'=>'Заголовок не может быть пустым!'),
+				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
+					'items'=>$sections[0], 'values'=>$sections[1]),
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+					'width' => '100px', 'maxlength' => 31,
+					'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
+					'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
+					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом',
+					'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
+				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
+					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
+					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
+				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
+					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
+					'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/',
+					'errormsg'=>'Неправильный формат даты!'),
+				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
+					'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
+					'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
+				array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
+					'width' => '200px', 'maxlength' => '63'),
+				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать',
+					'default' => true),
 				array ('type' => 'header', 'value' => 'Свойства баннера'),
 				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50'),
-				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px', 'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px', 'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%', 'maxlength' => '255'),
-				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать', 'items'=>array('в новом окне', 'в том же окне')),
+				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
+					'comment'=>'только для Flash'),
+				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
+					'comment'=>'только для Flash'),
+				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+					'maxlength' => '255'),
+				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
+					'items'=>array('в новом окне', 'в том же окне')),
 				array ('type' => 'header', 'value' => 'HTML-код баннера'),
-				array ('type' => 'memo', 'name' => 'html', 'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)', 'height' => '4'),
+				array ('type' => 'memo', 'name' => 'html',
+					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)',
+					'height' => '4'),
 			),
 			'buttons' => array('ok', 'cancel'),
 		);
@@ -350,8 +380,9 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает диалог изменения баннера
 	 *
-	 * @return unknown_type
+	 * @return string  HMTL
 	 */
 	function edit()
 	{
@@ -398,8 +429,9 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает разметку списка баннеров
 	 *
-	 * @return unknown_type
+	 * @return string  HTML
 	 */
 	function adminRender()
 	{
@@ -431,6 +463,55 @@ class TBanners extends TListContentPlugin
 	}
 	//-----------------------------------------------------------------------------
 
+
+	function adminRenderContent()
+	{
+	global $Eresus, $page;
+
+		$result = '';
+		if (!is_null(arg('id'))) {
+			$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."` = '".arg('id', 'dbsafe')."'");
+			$page->title .= empty($item['caption'])?'':' - '.$item['caption'];
+		}
+		switch (true) {
+			case !is_null(arg('update')) && isset($this->table['controls']['edit']):
+				if (method_exists($this, 'update')) $result = $this->update(); else ErrorMessage(sprintf(errMethodNotFound, 'update', get_class($this)));
+			break;
+			case !is_null(arg('toggle')) && isset($this->table['controls']['toggle']):
+				if (method_exists($this, 'toggle')) $result = $this->toggle(arg('toggle', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'toggle', get_class($this)));
+			break;
+			case !is_null(arg('delete')) && isset($this->table['controls']['delete']):
+				if (method_exists($this, 'delete')) $result = $this->delete(arg('delete', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'delete', get_class($this)));
+			break;
+			case !is_null(arg('up')) && isset($this->table['controls']['position']):
+				if (method_exists($this, 'up')) $result = $this->table['sortDesc']?$this->down(arg('up', 'dbsafe')):$this->up(arg('up', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'up', get_class($this)));
+			break;
+			case !is_null(arg('down')) && isset($this->table['controls']['position']):
+				if (method_exists($this, 'down')) $result = $this->table['sortDesc']?$this->up(arg('down', 'dbsafe')):$this->down(arg('down', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'down', get_class($this)));
+			break;
+			case !is_null(arg('id')) && isset($this->table['controls']['edit']):
+				if (method_exists($this, 'adminEditItem')) $result = $this->adminEditItem(); else ErrorMessage(sprintf(errMethodNotFound, 'adminEditItem', get_class($this)));
+			break;
+			case !is_null(arg('action')):
+				switch (arg('action')) {
+					case 'create': if (isset($this->table['controls']['edit']))
+						if (method_exists($this, 'adminAddItem')) $result = $this->adminAddItem();
+						else ErrorMessage(sprintf(errMethodNotFound, 'adminAddItem', get_class($this)));
+					break;
+					case 'insert':
+						if (method_exists($this, 'insert')) $result = $this->insert();
+						else ErrorMessage(sprintf(errMethodNotFound, 'insert', get_class($this)));
+					break;
+				}
+			break;
+			default:
+				if (!is_null(arg('section'))) $this->table['condition'] = "`section`='".arg('section', 'int')."'";
+				$result = $page->renderTable($this->table);
+		}
+		return $result;
+	}
+	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
 	/**
 	 *
 	 * @return unknown_type
@@ -444,36 +525,43 @@ class TBanners extends TListContentPlugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Отрисовка баннеров и обработка кликов
 	 *
-	 * @param $text
-	 * @return unknown_type
+	 * @param string $text  HTML страницы
+	 * @return string  HTML страницы
 	 */
-	function clientOnPageRender($text)
+	public function clientOnPageRender($text)
 	{
 		global $Eresus, $db, $page, $request;
 
-		if (arg('banners-click')) {
-			if (count($Eresus->request['arg']) != 1) {
+		if (arg('banners-click'))
+		{
+			/*
+			 * Если передан аргумент banners-click, надо перенаправить польщователя на URL баннера
+			 */
+			if (count($Eresus->request['arg']) != 1)
+			{
 				$page->httpError(404);
-			} else {
-				$id = arg('banners-click');
-				if ($id != (string)((int)($id))) {
-					$page->httpError(404);
-				} else {
-					$item = $db->selectItem($this->name, "`id`='" . $id . "'");
-					if ($item) {
-						$item['clicks']++;
+			}
 
-						$item = $Eresus->db->escape($item);
-						$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
+			$id = arg('banners-click', 'int');
+			if ($id == '' | $id != arg('banners-click'))
+			{
+				$page->httpError(404);
+			}
 
-						HTTP::redirect($item['url']);
-					}
-						else
-					{
-						$page->httpError(404);
-					}
-				}
+			$item = $db->selectItem($this->name, "`id`='" . $id . "'");
+			if ($item) {
+				$item['clicks']++;
+
+				$item = $Eresus->db->escape($item);
+				$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
+
+				HTTP::redirect($item['url']);
+			}
+				else
+			{
+				$page->httpError(404);
 			}
 		} else {
 			# Ищем все места встаки баннеров
@@ -526,5 +614,19 @@ class TBanners extends TListContentPlugin
 		return $text;
 	}
 	//-----------------------------------------------------------------------------
+
+	private function processClick()
+	{
+		;
+	}
+	//-----------------------------------------------------------------------------
+
+	protected function createTable($table)
+	{
+		global $Eresus;
+
+		$Eresus->db->query('CREATE TABLE IF NOT EXISTS `'.$Eresus->db->prefix.$table['name'].'`'.$table['sql']);
+	}
+	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
 }
 
