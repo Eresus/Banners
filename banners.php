@@ -2,7 +2,7 @@
 /**
  * Banners
  *
- * Eresus 2
+ * Eresus 2.13
  *
  * Система показа баннеров.
  *
@@ -550,56 +550,46 @@ class Banners extends Plugin
 				$page->httpError(404);
 			}
 
-			$item = $db->selectItem($this->name, "`id`='" . $id . "'");
-			if ($item) {
-				$item['clicks']++;
+			$this->processClick($id);
 
-				$item = $Eresus->db->escape($item);
-				$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
-
-				HTTP::redirect($item['url']);
-			}
-				else
-			{
-				$page->httpError(404);
-			}
-		} else {
-			# Ищем все места встаки баннеров
+		}
+		else
+		{
+			// Ищем все места встаки баннеров
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
-			foreach($blocks as $block) {
-				$sql = "(`active`=1) AND (`section` LIKE '%:".$page->id.":%' OR `section` LIKE '%:all:%') AND (`block`='".$block[1][0]."') AND (`showFrom`<='".gettime()."') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '".gettime()."')";
-				# Получаем баннеры для этого блока в порядке уменьшения приоритета
-				$items = $db->select($this->name, $sql, '`priority`', true);
-				if (count($items)) {
-					# Отсекаем баннеры с низким приоритетом
+			foreach($blocks as $block)
+			{
+				$sql = "(`active`=1) AND (`section` LIKE '%:" . $page->id .
+					":%' OR `section` LIKE '%:all:%') AND (`block`='" . $block[1][0 ] .
+					"') AND (`showFrom`<='" . gettime() . "') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
+					gettime() . "')";
+
+				// Получаем баннеры для этого блока в порядке уменьшения приоритета
+				$items = $this->dbSelect('', $sql, '-priority');
+				if (count($items))
+				{
+					/* Отсекаем баннеры с низким приоритетом */
 					$priority = $items[0]['priority'];
-					for($i=0; $i<count($items); $i++) if ($items[$i]['priority'] != $priority) {
-						$items = array_slice($items, 0, $i);
-						break;
-					}
-					# Выбираем случайный баннер
-					$item = $items[mt_rand(0, count($items)-1)];
-					if (empty($item['html'])) {
-						if (substr(strtolower($item['image']), -4) == '.swf') {
-							$banner =
-							'<object type="application/x-shockwave-flash" data="'.dataRoot.$this->name.'/'.$item['image'].'" width="'.$item['width'].'" height="'.$item['height'].'">
-								<param name="movie" value="'.dataRoot.$this->name.'/'.$item['image'].'" />
-								<param name="quality" value="high" />
-							</object>';
-						} else {
-							$banner = img(dataRoot.$this->name.'/'.$item['image']);
-							if (!empty($item['url'])) $banner = '<a href="'.$request['path'].execScript.'?banners-click='.$item['id'].'"'.($item['target']?'':' target="_blank"').'>'.$banner.'</a>';
+					for ($i = 0; $i < count($items); $i++)
+					{
+						if ($items[$i]['priority'] != $priority)
+						{
+							$items = array_slice($items, 0, $i);
+							break;
 						}
-					} else {
-						$banner = StripSlashes($item['html']);
 					}
+
+					// Выбираем случайный баннер
+					$item = $items[mt_rand(0, count($items)-1)];
 					$item['shows']++;
+					$banner = BannersFactory::createFromArray($item);
 
 					$db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
 
-					$text = substr_replace($text, $banner, $block[0][1]+$delta, strlen($block[0][0]));
-					$delta += strlen($banner) - strlen($block[0][0]);
+					$code = $banner->render();
+					$text = substr_replace($text, $code, $block[0][1]+$delta, strlen($block[0][0]));
+					$delta += strlen($code) - strlen($block[0][0]);
 				}
 			}
 			$items = $db->select($this->table['name'], "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
@@ -615,9 +605,25 @@ class Banners extends Plugin
 	}
 	//-----------------------------------------------------------------------------
 
-	private function processClick()
+	/**
+	 * Перенаправляет посетителя на URL, заданный баннером
+	 *
+	 * @param int $id  Идентификатор баннера
+	 */
+	private function processClick($id)
 	{
-		;
+		$item = $this->dbItem('', $id);
+		if ($item)
+		{
+			$item['clicks']++;
+			$this->dbUpdate('', $item);
+
+			HTTP::redirect($item['url']);
+		}
+		else
+		{
+			$GLOBALS['page']->httpError(404);
+		}
 	}
 	//-----------------------------------------------------------------------------
 
@@ -628,5 +634,206 @@ class Banners extends Plugin
 		$Eresus->db->query('CREATE TABLE IF NOT EXISTS `'.$Eresus->db->prefix.$table['name'].'`'.$table['sql']);
 	}
 	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+}
+
+
+
+/**
+ * Баннер
+ *
+ * @package Banners
+ */
+abstract class AbstractBanner
+{
+	/**
+	 * Свойства баннера
+	 *
+	 * @var array
+	 */
+	protected $data;
+
+	/**
+	 * Конструктор баннера
+	 *
+	 * @param array $data
+	 * @return AbstractBanner
+	 */
+	public function __construct($data)
+	{
+		$this->data = $data;
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Метод должен возвращать разметку баннера для добавления на страницу
+	 *
+	 * @return string  HTML
+	 */
+	abstract public function render();
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Возвращает объект плагина Banners
+	 *
+	 * @return Banners
+	 */
+	protected function getPlugin()
+	{
+		$plugin = $GLOBALS['Eresus']->plugins->load('banners');
+		return $plugin;
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Текстовый баннер
+ *
+ * @package Banners
+ */
+class TextBanner extends AbstractBanner
+{
+	/**
+	 * Возвращает кода баннера для вставки на страницу
+	 *
+	 * @return string  HTML
+	 * @see AbstractBanner::render()
+	 */
+	public function render()
+	{
+		return $this->data['html'];
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Графический баннер
+ *
+ * @package Banners
+ */
+class ImageBanner extends AbstractBanner
+{
+	/**
+	 * Возвращает кода баннера для вставки на страницу
+	 *
+	 * @return string  HTML
+	 * @see AbstractBanner::render()
+	 */
+	public function render()
+	{
+		global $Eresus;
+
+		$plugin = $this->getPlugin();
+
+		$html = img($plugin->dirData . $this->data['image']);
+
+		if (!empty($this->data['url']))
+		{
+			$template = '<a href="%s"%s>%s</a>';
+
+			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+			$target = $this->data['target'] ? '' : ' target="_blank"';
+
+			$html = sprintf($template, $url, $target, $html);
+		}
+
+		return $html;
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Flash-баннер
+ *
+ * @package Banners
+ */
+class FlashBanner extends AbstractBanner
+{
+	/**
+	 * Возвращает кода баннера для вставки на страницу
+	 *
+	 * @return string  HTML
+	 * @see AbstractBanner::render()
+	 */
+	public function render()
+	{
+		global $Eresus, $page;
+
+		$plugin = $this->getPlugin();
+
+		$template =
+			'<object type="application/x-shockwave-flash" data="%s" width="%d" height="%d">' .
+				'<param name="movie" value="%1$s" />' .
+				'<param name="quality" value="high" />' .
+				'<param name="wmode" value="opaque" />' .
+			'</object>';
+
+		$swf = $plugin->urlData . $this->data['image'];
+		$width = $this->data['width'];
+		$height = $this->data['height'];
+
+		$html = sprintf($template, $swf, $width, $height);
+
+		if (!empty($this->data['url']))
+		{
+			$page->linkStyles($plugin->urlCode . 'main.css');
+
+			$template =
+				'<div class="banners-swf-container">' .
+					'<div class="banners-swf-overlay">' .
+						'<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
+					'</div>' .
+					'%3$s' .
+				'</div>';
+
+			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+			$target = $this->data['target'] ? '' : ' target="_blank"';
+			$stubImage = $Eresus->root . 'style/dot.gif';
+
+			$html = sprintf($template, $url, $target, $html, $stubImage, $width, $height);
+		}
+
+		return $html;
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Фабрика баннеров
+ *
+ * Класс предназначен для создания объектов баннеров
+ *
+ * @package Banners
+ */
+class BannersFactory
+{
+	/**
+	 * Создаёт объект баннера из массива его свойств
+	 *
+	 * @param array $data
+	 * @return Banner  Объект баннера
+	 */
+	public static function createFromArray($data)
+	{
+		switch (true)
+		{
+			case $data['html'] != '':
+				return new TextBanner($data);
+
+			case preg_match('/\.swf$/i', $data['image']):
+				return new FlashBanner($data);
+
+			default:
+				return new ImageBanner($data);
+		}
+	}
+	//-----------------------------------------------------------------------------
 }
 
