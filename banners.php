@@ -352,8 +352,8 @@ class Banners extends Plugin
 				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
 					'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
 					'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
-					'width' => '200px', 'maxlength' => '63'),
+				/*array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
+					'width' => '200px', 'maxlength' => '63'),*/
 				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать',
 					'default' => true),
 				array ('type' => 'header', 'value' => 'Свойства баннера'),
@@ -407,7 +407,7 @@ class Banners extends Plugin
 				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
 				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
 				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов', 'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0, 'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
+				//array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
 				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
 				array ('type' => 'header', 'value' => 'Свойства баннера'),
 				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50', 'comment' => '<a></a>'),
@@ -595,7 +595,7 @@ class Banners extends Plugin
 			$items = $db->select($this->table['name'], "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
 			if (count($items)) {
 				foreach($items as $item) {
-					sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].' был отключен, т.к. так как превышены количество показов либо дата показа."');
+					//sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].' был отключен, т.к. так как превышены количество показов либо дата показа."');
 					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "'.$item['caption'].' был отключен системой управления сайтом."');
 				}
 				$db->update($this->table['name'], "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
