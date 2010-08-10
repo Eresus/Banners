@@ -172,10 +172,12 @@ class Banners extends Plugin
 	 */
 	private function menuBranch($owner = 0, $level = 0)
 	{
-		global $db;
+		global $Eresus;
 
 		$result = array(array(), array());
-		$items = $db->select('`pages`', "(`access`>='".USER."')AND(`owner`='".$owner."') AND (`active`='1')", "`position`", false, "`id`,`caption`");
+		$items = $Eresus->db->select('`pages`',
+			"(`access` >= '" . USER . "') AND (`owner` = '" . $owner . "') AND (`active` = '1')",
+			"-position", "`id`,`caption`");
 		if (count($items)) foreach($items as $item)
 		{
 			$result[0][] = str_repeat('- ', $level).$item['caption'];
@@ -198,25 +200,24 @@ class Banners extends Plugin
 	 */
 	private function insert()
 	{
-		global $Eresus, $db, $request;
+		global $Eresus, $request;
 
-		$item = GetArgs($db->fields($this->table['name']));
+		$item = GetArgs($Eresus->db->fields($this->table['name']));
 
 		$item['section'] = ':'.implode(':', arg('section')).':';
 
 		if ($item['showTill'] == '') unset($item['showTill']);
 
-		$db->insert($this->table['name'], $item);
+		$Eresus->db->insert($this->table['name'], $item);
 
-		$item['id'] = $db->getInsertedID();
+		$item['id'] = $Eresus->db->getInsertedID();
 		if (is_uploaded_file($_FILES['image']['tmp_name']))
 		{
 			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
 			upload('image', filesRoot.'data/'.$this->name.'/'.$filename);
 			$item['image'] = $filename;
-			$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+			$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 		}
-		sendNotify('Добавлен баннер: '.$item['caption']);
 		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
@@ -227,9 +228,9 @@ class Banners extends Plugin
 	 */
 	private function update()
 	{
-		global $Eresus, $db, $request;
+		global $Eresus, $request;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
 		$old_file = $item['image'];
 		$item = GetArgs($item);
 
@@ -255,9 +256,8 @@ class Banners extends Plugin
 			$item['image'] = $filename;
 		}
 
-		$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 
-		sendNotify('Изменен баннер: '.$item['caption']);
 		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
@@ -270,15 +270,14 @@ class Banners extends Plugin
 	 */
 	private function toggle($id)
 	{
-		global $Eresus, $db, $page, $request;
+		global $Eresus, $page;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$id."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
 		$item['active'] = !$item['active'];
 
 		$item = $Eresus->db->escape($item);
-		$db->updateItem($this->table['name'], $item, "`id`='".$id."'");
+		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$id."'");
 
-		sendNotify(($item['active']?admActivated:admDeactivated).': '.'<a href="'.str_replace('toggle','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
 		HTTP::redirect($page->url());
 	}
 	//-----------------------------------------------------------------------------
@@ -291,9 +290,9 @@ class Banners extends Plugin
 	 */
 	private function delete($id)
 	{
-		global $db, $page, $request, $Eresus;
+		global $page, $Eresus;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$id."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
 		$path = dataFiles.$this->name.'/';
 		if (
 			!empty($item['image']) &&
@@ -302,7 +301,6 @@ class Banners extends Plugin
 		{
 			unlink($path.$item['image']);
 		}
-		sendNotify(admDeleted.': '.'<a href="'.str_replace('delete','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
 		$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."`='".$id."'");
 		$Eresus->db->delete($this->table['name'], "`".$this->table['key']."`='".$id."'");
 		HTTP::redirect(str_replace('&amp;', '&', $page->url()));
@@ -316,7 +314,7 @@ class Banners extends Plugin
 	 */
 	function create()
 	{
-		global $page, $db;
+		global $page;
 
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
@@ -384,9 +382,9 @@ class Banners extends Plugin
 	 */
 	function edit()
 	{
-		global $page, $db, $request;
+		global $page, $Eresus, $request;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
 		$item['section'] = explode(':', $item['section']);
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
@@ -433,11 +431,11 @@ class Banners extends Plugin
 	 */
 	function adminRender()
 	{
-		global $db, $page, $user, $request, $session;
+		global $Eresus, $page, $request, $session;
 
 		$result = '';
 		if (isset($request['arg']['id'])) {
-			$item = $db->selectItem($this->table['name'], "`".$this->table['key']."` = '".$request['arg']['id']."'");
+			$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."` = '".$request['arg']['id']."'");
 			$page->title .= empty($item['caption'])?'':' - '.$item['caption'];
 		}
 		if (isset($request['arg']['update']) && isset($this->table['controls']['edit'])) {
@@ -530,7 +528,7 @@ class Banners extends Plugin
 	 */
 	public function clientOnPageRender($text)
 	{
-		global $Eresus, $db, $page, $request;
+		global $Eresus, $page;
 
 		if (arg('banners-click'))
 		{
@@ -583,20 +581,24 @@ class Banners extends Plugin
 					$item['shows']++;
 					$banner = BannersFactory::createFromArray($item);
 
-					$db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
+					$Eresus->db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
 
 					$code = $banner->render();
 					$text = substr_replace($text, $code, $block[0][1]+$delta, strlen($block[0][0]));
 					$delta += strlen($code) - strlen($block[0][0]);
 				}
 			}
-			$items = $db->select($this->table['name'], "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
-			if (count($items)) {
-				foreach($items as $item) {
+			$items = $Eresus->db->select($this->table['name'],
+				"(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" . gettime() .
+				"') AND (`showTill` != '0000-00-00'))");
+			if (count($items))
+			{
+				foreach($items as $item)
+				{
 					//sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].' был отключен, т.к. так как превышены количество показов либо дата показа."');
 					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "'.$item['caption'].' был отключен системой управления сайтом."');
 				}
-				$db->update($this->table['name'], "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
+				$Eresus->db->update($this->table['name'], "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
 			}
 		}
 		return $text;
