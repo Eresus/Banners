@@ -204,7 +204,10 @@ class Banners extends Plugin
 
 		$item = GetArgs($Eresus->db->fields($this->table['name']));
 
-		$item['section'] = ':'.implode(':', arg('section')).':';
+		if (arg('section'))
+		{
+			$item['section'] = '|'.implode('|', arg('section')).'|';
+		}
 
 		if ($item['showTill'] == '') unset($item['showTill']);
 
@@ -234,7 +237,10 @@ class Banners extends Plugin
 		$old_file = $item['image'];
 		$item = GetArgs($item);
 
-		$item['section'] = ':'.implode(':', arg('section')).':';
+		if (arg('section'))
+		{
+			$item['section'] = '|'.implode('|', arg('section')).'|';
+		}
 		if ($item['showTill'] == '')
 		{
 			unset($item['showTill']);
@@ -385,7 +391,7 @@ class Banners extends Plugin
 		global $page, $Eresus, $request;
 
 		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
-		$item['section'] = explode(':', $item['section']);
+		$item['section'] = explode('|', $item['section']);
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
 		array_unshift($sections[0], 'бяе пюгдекш');
