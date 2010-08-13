@@ -151,6 +151,19 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает путь к директории данныз плагина
+	 *
+	 * @return string
+	 *
+	 * @since 2.00
+	 */
+	public function getDataDir()
+	{
+		return $this->dirData;
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
 	 * Действия при установке плагина
 	 */
 	function install()
@@ -560,10 +573,10 @@ class Banners extends Plugin
 			// Ищем все места встаки баннеров
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
-			foreach($blocks as $block)
+			foreach ($blocks as $block)
 			{
-				$sql = "(`active`=1) AND (`section` LIKE '%:" . $page->id .
-					":%' OR `section` LIKE '%:all:%') AND (`block`='" . $block[1][0 ] .
+				$sql = "(`active`=1) AND (`section` LIKE '%|" . $page->id .
+					"|%' OR `section` LIKE '%|all|%') AND (`block`='" . $block[1][0 ] .
 					"') AND (`showFrom`<='" . gettime() . "') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
 					gettime() . "')";
 
@@ -734,7 +747,7 @@ class ImageBanner extends AbstractBanner
 
 		$plugin = $this->getPlugin();
 
-		$html = img($plugin->dirData . $this->data['image']);
+		$html = img($plugin->getDataDir() . $this->data['image']);
 
 		if (!empty($this->data['url']))
 		{
