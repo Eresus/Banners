@@ -89,7 +89,7 @@ class Banners extends Plugin
 			array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align'=>'right', 'replace' => array('0'=> 'без огранич.')),
 			array('name' => 'shows', 'caption' => 'Показан', 'align'=>'right'),
 			array('name' => 'clicks', 'caption' => 'Кликов', 'align'=>'right'),
-			array('name' => 'mail', 'caption' => 'Владелец', 'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
+			//array('name' => 'mail', 'caption' => 'Владелец', 'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
 		),
 		'controls' => array (
 			'delete' => '',
