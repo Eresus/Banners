@@ -2,19 +2,17 @@
 /**
  * Banners
  *
- * Eresus 2
- *
  * Система показа баннеров.
  *
- * @version: 1.12
+ * @version: 2.00
  *
- * @copyright   2005-2007, ProCreat Systems, http://procreat.ru/
- * @copyright   2007-2009, Eresus Group, http://eresus.ru/
- * @license     http://www.gnu.org/licenses/gpl.txt  GPL License 3
- * @author      Mikhail Krasilnikov <mk@procreat.ru>
- * @author      БерсЪ <bersz@procreat.ru>
- * @author      dkDimon <dkdimon@mail.ru>
- * @author      ghost
+ * @copyright 2005, ProCreat Systems, http://procreat.ru/
+ * @copyright 2007, Eresus Group, http://eresus.ru/
+ * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
+ * @author Mikhail Krasilnikov <mk@procreat.ru>
+ * @author БерсЪ <bersz@procreat.ru>
+ * @author dkDimon <dkdimon@mail.ru>
+ * @author ghost
  *
  * Данная программа является свободным программным обеспечением. Вы
  * вправе распространять ее и/или модифицировать в соответствии с
@@ -32,8 +30,7 @@
  * GNU с этой программой. Если Вы ее не получили, смотрите документ на
  * <http://www.gnu.org/licenses/>
  *
- * @package Plugins
- * @subpackage Banners
+ * @package Banners
  *
  * $Id$
  */
@@ -41,47 +38,45 @@
 /**
  * Класс плагина
  *
- * @package Plugins
- * @subpackage Banners
- *
+ * @package Banners
  */
-class TBanners extends TListContentPlugin {
-
+class Banners extends Plugin
+{
 	/**
-	 * Имя плагина
+	 * Требуемая версия ядра
 	 * @var string
 	 */
-	var $name = 'banners';
+	public $kernel = '2.13';
 
 	/**
 	 * Название плагина
 	 * @var string
 	 */
-	var $title = 'Баннеры';
+	public $title = 'Баннеры';
 
 	/**
 	 * Тип
 	 * @var string
 	 */
-	var $type = 'client,admin';
+	public $type = 'client,admin';
 
 	/**
 	 * Версия
 	 * @var string
 	 */
-	var $version = '1.12';
+	public $version = '2.00';
 
 	/**
 	 * Описание
 	 * @var string
 	 */
-	var $description = 'Система показа баннеров';
+	public $description = 'Система показа баннеров';
 
 	/**
 	 * Таблица АИ
 	 * @var array
 	 */
-	var $table = array (
+	private $table = array (
 		'name' => 'banners',
 		'key'=> 'id',
 		'sortMode' => 'id',
@@ -94,7 +89,7 @@ class TBanners extends TListContentPlugin {
 			array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align'=>'right', 'replace' => array('0'=> 'без огранич.')),
 			array('name' => 'shows', 'caption' => 'Показан', 'align'=>'right'),
 			array('name' => 'clicks', 'caption' => 'Кликов', 'align'=>'right'),
-			array('name' => 'mail', 'caption' => 'Владелец', 'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
+			//array('name' => 'mail', 'caption' => 'Владелец', 'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
 		),
 		'controls' => array (
 			'delete' => '',
@@ -140,43 +135,69 @@ class TBanners extends TListContentPlugin {
 	 *
 	 * Производит регистрацию обработчиков событий.
 	 */
-	function TBanners()
+	function __construct()
 	{
-		global $plugins;
+		parent::__construct();
 
-		parent::TPlugin();
-		if (defined('CLIENTUI')) $plugins->events['clientOnPageRender'][] = $this->name;
-		else $plugins->events['adminOnMenuRender'][] = $this->name;
+		if (defined('CLIENTUI'))
+		{
+			$this->listenEvents('clientOnPageRender');
+		}
+		else
+		{
+			$this->listenEvents('adminOnMenuRender');
+		}
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает путь к директории данныз плагина
 	 *
+	 * @return string
+	 *
+	 * @since 2.00
+	 */
+	public function getDataDir()
+	{
+		return $this->dirData;
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Действия при установке плагина
 	 */
 	function install()
 	{
 		parent::install();
-		umask(0000);
-		if (!file_exists(filesRoot.'data/'.$this->name)) mkdir(filesRoot.'data/'.$this->name, 0777);
+
+		$this->createTable($this->table);
+
+		$this->mkdir();
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает ветку разделов сайта
 	 *
-	 * @param $owner
-	 * @param $level
-	 * @return string
+	 * @param int $owner[optional]
+	 * @param int $level[optional]
+	 * @return array
 	 */
-	function menuBranch($owner = 0, $level = 0)
+	private function menuBranch($owner = 0, $level = 0)
 	{
-	global $db;
+		global $Eresus;
+
 		$result = array(array(), array());
-		$items = $db->select('`pages`', "(`access`>='".USER."')AND(`owner`='".$owner."') AND (`active`='1')", "`position`", false, "`id`,`caption`");
-		if (count($items)) foreach($items as $item) {
+		$items = $Eresus->db->select('`pages`',
+			"(`access` >= '" . USER . "') AND (`owner` = '" . $owner . "') AND (`active` = '1')",
+			"-position", "`id`,`caption`");
+		if (count($items)) foreach($items as $item)
+		{
 			$result[0][] = str_repeat('- ', $level).$item['caption'];
 			$result[1][] = $item['id'];
 			$sub = $this->menuBranch($item['id'], $level+1);
-			if (count($sub[0])) {
+			if (count($sub[0]))
+			{
 				$result[0] = array_merge($result[0], $sub[0]);
 				$result[1] = array_merge($result[1], $sub[1]);
 			}
@@ -186,110 +207,133 @@ class TBanners extends TListContentPlugin {
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Добавляет баннер в БД
 	 *
-	 * @return unknown_type
+	 * @return void
 	 */
-	function insert()
+	private function insert()
 	{
-		global $Eresus, $db, $request;
+		global $Eresus, $request;
 
-		$item = GetArgs($db->fields($this->table['name']));
+		$item = GetArgs($Eresus->db->fields($this->table['name']));
 
-		$item['section'] = ':'.implode(':', arg('section')).':';
+		if (arg('section'))
+		{
+			$item['section'] = '|'.implode('|', arg('section')).'|';
+		}
 
 		if ($item['showTill'] == '') unset($item['showTill']);
 
-		$item = $Eresus->db->escape($item);
-		$db->insert($this->table['name'], $item);
+		$Eresus->db->insert($this->table['name'], $item);
 
-		$item['id'] = $db->getInsertedID();
-		if (is_uploaded_file($_FILES['image']['tmp_name'])) {
+		$item['id'] = $Eresus->db->getInsertedID();
+		if (is_uploaded_file($_FILES['image']['tmp_name']))
+		{
 			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
 			upload('image', filesRoot.'data/'.$this->name.'/'.$filename);
 			$item['image'] = $filename;
-			$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+			$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 		}
-		sendNotify('Добавлен баннер: '.$item['caption']);
-		goto($request['arg']['submitURL']);
+		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
-	 *
-	 * @return unknown_type
+	 * Обновляет баннер в БД
+	 * @return void
 	 */
-	function update()
+	private function update()
 	{
-		global $Eresus, $db, $request;
+		global $Eresus, $request;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
 		$old_file = $item['image'];
 		$item = GetArgs($item);
 
-		$item['section'] = ':'.implode(':', arg('section')).':';
-		if ($item['showTill'] == '') unset($item['showTill']);
-		if (arg('flushShowCount')) $item['shows'] = 0;
-		if (is_uploaded_file($_FILES['image']['tmp_name'])) {
+		if (arg('section'))
+		{
+			$item['section'] = '|'.implode('|', arg('section')).'|';
+		}
+		if ($item['showTill'] == '')
+		{
+			unset($item['showTill']);
+		}
+		if (arg('flushShowCount'))
+		{
+			$item['shows'] = 0;
+		}
+		if (is_uploaded_file($_FILES['image']['tmp_name']))
+		{
 			$path = filesRoot.'data/'.$this->name.'/';
-			if (is_file($path.$old_file)) unlink($path.$old_file);
-			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
+			if (is_file($path.$old_file))
+			{
+				unlink($path.$old_file);
+			}
+			$filename = 'banner' . $item['id'] .
+				substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
 			upload('image', $path.$filename);
 			$item['image'] = $filename;
 		}
 
-		$item = $Eresus->db->escape($item);
-		$db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 
-		sendNotify('Изменен баннер: '.$item['caption']);
-		goto($request['arg']['submitURL']);
+		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Переключает активность баннера
 	 *
-	 * @param $id
-	 * @return unknown_type
+	 * @param int $id
+	 * @return void
 	 */
-	function toggle($id)
+	private function toggle($id)
 	{
-		global $Eresus, $db, $page, $request;
+		global $Eresus, $page;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$id."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
 		$item['active'] = !$item['active'];
 
 		$item = $Eresus->db->escape($item);
-		$db->updateItem($this->table['name'], $item, "`id`='".$id."'");
+		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$id."'");
 
-		sendNotify(($item['active']?admActivated:admDeactivated).': '.'<a href="'.str_replace('toggle','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
-		goto($page->url());
+		HTTP::redirect($page->url());
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Удаляет баннер
 	 *
-	 * @param $id
-	 * @return unknown_type
+	 * @param int $id
+	 * @return void
 	 */
-	function delete($id)
+	private function delete($id)
 	{
-		global $db, $page, $request;
+		global $page, $Eresus;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$id."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
 		$path = dataFiles.$this->name.'/';
-		if (!empty($item['image']) && file_exists($path.$item['image'])) unlink($path.$item['image']);
-		sendNotify(admDeleted.': '.'<a href="'.str_replace('delete','id',$request['url']).'">'.$item['caption'].'</a>', array('title'=>$this->title));
-		parent::delete($id);
-		goto($page->url());
+		if (
+			!empty($item['image']) &&
+			file_exists($path.$item['image'])
+		)
+		{
+			unlink($path.$item['image']);
+		}
+		$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."`='".$id."'");
+		$Eresus->db->delete($this->table['name'], "`".$this->table['key']."`='".$id."'");
+		HTTP::redirect(str_replace('&amp;', '&', $page->url()));
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает диалог добавления баннера
 	 *
-	 * @return unknown_type
+	 * @return string  HTML
 	 */
 	function create()
 	{
-		global $page, $db;
+		global $page;
 
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
@@ -298,26 +342,49 @@ class TBanners extends TListContentPlugin {
 		$form = array(
 			'name' => 'formCreate',
 			'caption' => 'Добавить баннер',
-			'width' => '95%',
+			'width' => '600px',
 			'fields' => array (
 				array ('type'=>'hidden','name'=>'action', 'value'=>'insert'),
-				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
-				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 31, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов', 'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0, 'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
-				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать', 'default' => true),
+				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+					'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
+					'errormsg'=>'Заголовок не может быть пустым!'),
+				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
+					'items'=>$sections[0], 'values'=>$sections[1]),
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+					'width' => '100px', 'maxlength' => 31,
+					'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
+					'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
+					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом',
+					'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
+				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
+					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
+					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
+				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
+					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
+					'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/',
+					'errormsg'=>'Неправильный формат даты!'),
+				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
+					'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
+					'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
+				/*array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
+					'width' => '200px', 'maxlength' => '63'),*/
+				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать',
+					'default' => true),
 				array ('type' => 'header', 'value' => 'Свойства баннера'),
 				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50'),
-				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px', 'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px', 'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%', 'maxlength' => '255'),
-				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать', 'items'=>array('в новом окне', 'в том же окне')),
+				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
+					'comment'=>'только для Flash'),
+				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
+					'comment'=>'только для Flash'),
+				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+					'maxlength' => '255'),
+				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
+					'items'=>array('в новом окне', 'в том же окне')),
 				array ('type' => 'header', 'value' => 'HTML-код баннера'),
-				array ('type' => 'memo', 'name' => 'html', 'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)', 'height' => '4'),
+				array ('type' => 'memo', 'name' => 'html',
+					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)',
+					'height' => '4'),
 			),
 			'buttons' => array('ok', 'cancel'),
 		);
@@ -328,15 +395,16 @@ class TBanners extends TListContentPlugin {
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает диалог изменения баннера
 	 *
-	 * @return unknown_type
+	 * @return string  HMTL
 	 */
 	function edit()
 	{
-	global $page, $db, $request;
+		global $page, $Eresus, $request;
 
-		$item = $db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
-		$item['section'] = explode(':', $item['section']);
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
+		$item['section'] = explode('|', $item['section']);
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
 		array_unshift($sections[0], 'ВСЕ РАЗДЕЛЫ');
@@ -354,7 +422,7 @@ class TBanners extends TListContentPlugin {
 				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
 				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
 				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов', 'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0, 'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
+				//array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
 				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
 				array ('type' => 'header', 'value' => 'Свойства баннера'),
 				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50', 'comment' => '<a></a>'),
@@ -376,16 +444,17 @@ class TBanners extends TListContentPlugin {
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Возвращает разметку списка баннеров
 	 *
-	 * @return unknown_type
+	 * @return string  HTML
 	 */
 	function adminRender()
 	{
-	global $db, $page, $user, $request, $session;
+		global $Eresus, $page, $request, $session;
 
 		$result = '';
 		if (isset($request['arg']['id'])) {
-			$item = $db->selectItem($this->table['name'], "`".$this->table['key']."` = '".$request['arg']['id']."'");
+			$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."` = '".$request['arg']['id']."'");
 			$page->title .= empty($item['caption'])?'':' - '.$item['caption'];
 		}
 		if (isset($request['arg']['update']) && isset($this->table['controls']['edit'])) {
@@ -409,84 +478,380 @@ class TBanners extends TListContentPlugin {
 	}
 	//-----------------------------------------------------------------------------
 
+
+	function adminRenderContent()
+	{
+	global $Eresus, $page;
+
+		$result = '';
+		if (!is_null(arg('id'))) {
+			$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."` = '".arg('id', 'dbsafe')."'");
+			$page->title .= empty($item['caption'])?'':' - '.$item['caption'];
+		}
+		switch (true) {
+			case !is_null(arg('update')) && isset($this->table['controls']['edit']):
+				if (method_exists($this, 'update')) $result = $this->update(); else ErrorMessage(sprintf(errMethodNotFound, 'update', get_class($this)));
+			break;
+			case !is_null(arg('toggle')) && isset($this->table['controls']['toggle']):
+				if (method_exists($this, 'toggle')) $result = $this->toggle(arg('toggle', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'toggle', get_class($this)));
+			break;
+			case !is_null(arg('delete')) && isset($this->table['controls']['delete']):
+				if (method_exists($this, 'delete')) $result = $this->delete(arg('delete', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'delete', get_class($this)));
+			break;
+			case !is_null(arg('up')) && isset($this->table['controls']['position']):
+				if (method_exists($this, 'up')) $result = $this->table['sortDesc']?$this->down(arg('up', 'dbsafe')):$this->up(arg('up', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'up', get_class($this)));
+			break;
+			case !is_null(arg('down')) && isset($this->table['controls']['position']):
+				if (method_exists($this, 'down')) $result = $this->table['sortDesc']?$this->up(arg('down', 'dbsafe')):$this->down(arg('down', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'down', get_class($this)));
+			break;
+			case !is_null(arg('id')) && isset($this->table['controls']['edit']):
+				if (method_exists($this, 'adminEditItem')) $result = $this->adminEditItem(); else ErrorMessage(sprintf(errMethodNotFound, 'adminEditItem', get_class($this)));
+			break;
+			case !is_null(arg('action')):
+				switch (arg('action')) {
+					case 'create': if (isset($this->table['controls']['edit']))
+						if (method_exists($this, 'adminAddItem')) $result = $this->adminAddItem();
+						else ErrorMessage(sprintf(errMethodNotFound, 'adminAddItem', get_class($this)));
+					break;
+					case 'insert':
+						if (method_exists($this, 'insert')) $result = $this->insert();
+						else ErrorMessage(sprintf(errMethodNotFound, 'insert', get_class($this)));
+					break;
+				}
+			break;
+			default:
+				if (!is_null(arg('section'))) $this->table['condition'] = "`section`='".arg('section', 'int')."'";
+				$result = $page->renderTable($this->table);
+		}
+		return $result;
+	}
+	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
 	/**
 	 *
 	 * @return unknown_type
 	 */
 	function adminOnMenuRender()
 	{
-	global $page;
+		global $page;
 
 		$page->addMenuItem(admExtensions, array ('access'	=> EDITOR, 'link'	=> $this->name, 'caption'	=> $this->title, 'hint'	=> $this->description));
 	}
 	//-----------------------------------------------------------------------------
 
 	/**
+	 * Отрисовка баннеров и обработка кликов
 	 *
-	 * @param $text
-	 * @return unknown_type
+	 * @param string $text  HTML страницы
+	 * @return string  HTML страницы
 	 */
-	function clientOnPageRender($text)
+	public function clientOnPageRender($text)
 	{
-	global $Eresus, $db, $page, $request;
+		global $Eresus, $page;
 
-		if (arg('banners-click')) {
-			$item = $db->selectItem($this->name, "`id`='".arg('banners-click')."'");
-			$item['clicks']++;
+		if (arg('banners-click'))
+		{
+			/*
+			 * Если передан аргумент banners-click, надо перенаправить польщователя на URL баннера
+			 */
+			if (count($Eresus->request['arg']) != 1)
+			{
+				$page->httpError(404);
+			}
 
-			$item = $Eresus->db->escape($item);
-			$db->updateItem($this->name, $item, "`id`='".$item['id']."'");
-			goto($item['url']);
-			exit;
-		} else {
-			# Ищем все места встаки баннеров
+			$id = arg('banners-click', 'int');
+			if ($id == '' | $id != arg('banners-click'))
+			{
+				$page->httpError(404);
+			}
+
+			$this->processClick($id);
+
+		}
+		else
+		{
+			// Ищем все места встаки баннеров
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
-			foreach($blocks as $block) {
-				$sql = "(`active`=1) AND (`section` LIKE '%:".$page->id.":%' OR `section` LIKE '%:all:%') AND (`block`='".$block[1][0]."') AND (`showFrom`<='".gettime()."') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '".gettime()."')";
-				# Получаем баннеры для этого блока в порядке уменьшения приоритета
-				$items = $db->select($this->name, $sql, '`priority`', true);
-				if (count($items)) {
-					# Отсекаем баннеры с низким приоритетом
+			foreach ($blocks as $block)
+			{
+				$sql = "(`active`=1) AND (`section` LIKE '%|" . $page->id .
+					"|%' OR `section` LIKE '%|all|%') AND (`block`='" . $block[1][0 ] .
+					"') AND (`showFrom`<='" . gettime() . "') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
+					gettime() . "')";
+
+				// Получаем баннеры для этого блока в порядке уменьшения приоритета
+				$items = $this->dbSelect('', $sql, '-priority');
+				if (count($items))
+				{
+					/* Отсекаем баннеры с низким приоритетом */
 					$priority = $items[0]['priority'];
-					for($i=0; $i<count($items); $i++) if ($items[$i]['priority'] != $priority) {
-						$items = array_slice($items, 0, $i);
-						break;
-					}
-					# Выбираем случайный баннер
-					$item = $items[mt_rand(0, count($items)-1)];
-					if (empty($item['html'])) {
-						if (substr(strtolower($item['image']), -4) == '.swf') {
-							$banner =
-							'<object type="application/x-shockwave-flash" data="'.dataRoot.$this->name.'/'.$item['image'].'" width="'.$item['width'].'" height="'.$item['height'].'">
-								<param name="movie" value="'.dataRoot.$this->name.'/'.$item['image'].'" />
-								<param name="quality" value="high" />
-							</object>';
-						} else {
-							$banner = img(dataRoot.$this->name.'/'.$item['image']);
-							if (!empty($item['url'])) $banner = '<a href="'.$request['path'].execScript.'?banners-click='.$item['id'].'"'.($item['target']?'':' target="_blank"').'>'.$banner.'</a>';
+					for ($i = 0; $i < count($items); $i++)
+					{
+						if ($items[$i]['priority'] != $priority)
+						{
+							$items = array_slice($items, 0, $i);
+							break;
 						}
-					} else {
-						$banner = StripSlashes($item['html']);
 					}
+
+					// Выбираем случайный баннер
+					$item = $items[mt_rand(0, count($items)-1)];
 					$item['shows']++;
+					$banner = BannersFactory::createFromArray($item);
 
-					$db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
+					$Eresus->db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
 
-					$text = substr_replace($text, $banner, $block[0][1]+$delta, strlen($block[0][0]));
-					$delta += strlen($banner) - strlen($block[0][0]);
+					$code = $banner->render();
+					$text = substr_replace($text, $code, $block[0][1]+$delta, strlen($block[0][0]));
+					$delta += strlen($code) - strlen($block[0][0]);
 				}
 			}
-			$items = $db->select($this->table['name'], "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
-			if (count($items)) {
-				foreach($items as $item) {
-					sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].' был отключен, т.к. так как превышены количество показов либо дата показа."');
+			$items = $Eresus->db->select($this->table['name'],
+				"(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" . gettime() .
+				"') AND (`showTill` != '0000-00-00'))");
+			if (count($items))
+			{
+				foreach($items as $item)
+				{
+					//sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].' был отключен, т.к. так как превышены количество показов либо дата показа."');
 					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "'.$item['caption'].' был отключен системой управления сайтом."');
 				}
-				$db->update($this->table['name'], "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
+				$Eresus->db->update($this->table['name'], "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
 			}
 		}
 		return $text;
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Перенаправляет посетителя на URL, заданный баннером
+	 *
+	 * @param int $id  Идентификатор баннера
+	 */
+	private function processClick($id)
+	{
+		$item = $this->dbItem('', $id);
+		if ($item)
+		{
+			$item['clicks']++;
+			$this->dbUpdate('', $item);
+
+			HTTP::redirect($item['url']);
+		}
+		else
+		{
+			$GLOBALS['page']->httpError(404);
+		}
+	}
+	//-----------------------------------------------------------------------------
+
+	protected function createTable($table)
+	{
+		global $Eresus;
+
+		$Eresus->db->query('CREATE TABLE IF NOT EXISTS `'.$Eresus->db->prefix.$table['name'].'`'.$table['sql']);
+	}
+	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+}
+
+
+
+/**
+ * Баннер
+ *
+ * @package Banners
+ */
+abstract class AbstractBanner
+{
+	/**
+	 * Свойства баннера
+	 *
+	 * @var array
+	 */
+	protected $data;
+
+	/**
+	 * Конструктор баннера
+	 *
+	 * @param array $data
+	 * @return AbstractBanner
+	 */
+	public function __construct($data)
+	{
+		$this->data = $data;
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Метод должен возвращать разметку баннера для добавления на страницу
+	 *
+	 * @return string  HTML
+	 */
+	abstract public function render();
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Возвращает объект плагина Banners
+	 *
+	 * @return Banners
+	 */
+	protected function getPlugin()
+	{
+		$plugin = $GLOBALS['Eresus']->plugins->load('banners');
+		return $plugin;
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Текстовый баннер
+ *
+ * @package Banners
+ */
+class TextBanner extends AbstractBanner
+{
+	/**
+	 * Возвращает кода баннера для вставки на страницу
+	 *
+	 * @return string  HTML
+	 * @see AbstractBanner::render()
+	 */
+	public function render()
+	{
+		return $this->data['html'];
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Графический баннер
+ *
+ * @package Banners
+ */
+class ImageBanner extends AbstractBanner
+{
+	/**
+	 * Возвращает кода баннера для вставки на страницу
+	 *
+	 * @return string  HTML
+	 * @see AbstractBanner::render()
+	 */
+	public function render()
+	{
+		global $Eresus;
+
+		$plugin = $this->getPlugin();
+
+		$html = img($plugin->getDataDir() . $this->data['image']);
+
+		if (!empty($this->data['url']))
+		{
+			$template = '<a href="%s"%s>%s</a>';
+
+			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+			$target = $this->data['target'] ? '' : ' target="_blank"';
+
+			$html = sprintf($template, $url, $target, $html);
+		}
+
+		return $html;
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Flash-баннер
+ *
+ * @package Banners
+ */
+class FlashBanner extends AbstractBanner
+{
+	/**
+	 * Возвращает кода баннера для вставки на страницу
+	 *
+	 * @return string  HTML
+	 * @see AbstractBanner::render()
+	 */
+	public function render()
+	{
+		global $Eresus, $page;
+
+		$plugin = $this->getPlugin();
+
+		$template =
+			'<object type="application/x-shockwave-flash" data="%s" width="%d" height="%d">' .
+				'<param name="movie" value="%1$s" />' .
+				'<param name="quality" value="high" />' .
+				'<param name="wmode" value="opaque" />' .
+			'</object>';
+
+		$swf = $plugin->urlData . $this->data['image'];
+		$width = $this->data['width'];
+		$height = $this->data['height'];
+
+		$html = sprintf($template, $swf, $width, $height);
+
+		if (!empty($this->data['url']))
+		{
+			$page->linkStyles($plugin->urlCode . 'main.css');
+
+			$template =
+				'<div class="banners-swf-container">' .
+					'<div class="banners-swf-overlay">' .
+						'<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
+					'</div>' .
+					'%3$s' .
+				'</div>';
+
+			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+			$target = $this->data['target'] ? '' : ' target="_blank"';
+			$stubImage = $Eresus->root . 'style/dot.gif';
+
+			$html = sprintf($template, $url, $target, $html, $stubImage, $width, $height);
+		}
+
+		return $html;
+	}
+	//-----------------------------------------------------------------------------
+}
+
+
+
+/**
+ * Фабрика баннеров
+ *
+ * Класс предназначен для создания объектов баннеров
+ *
+ * @package Banners
+ */
+class BannersFactory
+{
+	/**
+	 * Создаёт объект баннера из массива его свойств
+	 *
+	 * @param array $data
+	 * @return Banner  Объект баннера
+	 */
+	public static function createFromArray($data)
+	{
+		switch (true)
+		{
+			case $data['html'] != '':
+				return new TextBanner($data);
+
+			case preg_match('/\.swf$/i', $data['image']):
+				return new FlashBanner($data);
+
+			default:
+				return new ImageBanner($data);
+		}
 	}
 	//-----------------------------------------------------------------------------
 }
