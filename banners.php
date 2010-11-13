@@ -4,7 +4,7 @@
  *
  * Система показа баннеров.
  *
- * @version: 2.00
+ * @version: 2.01
  *
  * @copyright 2005, ProCreat Systems, http://procreat.ru/
  * @copyright 2007, Eresus Group, http://eresus.ru/
@@ -64,7 +64,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '2.00a';
+	public $version = '2.01a';
 
 	/**
 	 * Описание
@@ -223,17 +223,27 @@ class Banners extends Plugin
 	{
 		global $Eresus, $request;
 
-		$item = GetArgs($Eresus->db->fields($this->table['name']));
-
+		$item = array();
+		$item['caption'] = arg('caption', 'dbsafe');
+		$item['active'] = arg('active', 'int');
 		if (arg('section'))
 		{
 			$item['section'] = '|'.implode('|', arg('section')).'|';
 		}
-
-		if ($item['showTill'] == '')
+		$item['block'] = arg('block', 'dbsafe');
+		$item['priority'] = arg('priority', 'int');
+		$item['showFrom'] = arg('showFrom', 'dbsafe');
+		if (arg('showTill'))
 		{
-			unset($item['showTill']);
+			$item['showTill'] = arg('showTill', 'dbsafe');
 		}
+		$item['showCount'] = arg('showCount', 'int');
+		$item['html'] = arg('html', 'dbsafe');
+		$item['image'] = arg('image');
+		$item['width'] = arg('width', 'int');
+		$item['height'] = arg('height', 'int');
+		$item['url'] = arg('url', 'dbsafe');
+		$item['target'] = arg('target', 'dbsafe');
 
 		$Eresus->db->insert($this->table['name'], $item);
 
@@ -260,12 +270,24 @@ class Banners extends Plugin
 
 		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
 		$old_file = $item['image'];
-		$item = GetArgs($item);
-
+		$item['caption'] = arg('caption', 'dbsafe');
+		$item['active'] = arg('active', 'int');
 		if (arg('section'))
 		{
 			$item['section'] = '|'.implode('|', arg('section')).'|';
 		}
+		$item['block'] = arg('block', 'dbsafe');
+		$item['priority'] = arg('priority', 'int');
+		$item['showFrom'] = arg('showFrom', 'dbsafe');
+		$item['showTill'] = arg('showTill', 'dbsafe');
+		$item['showCount'] = arg('showCount', 'int');
+		$item['html'] = arg('html', 'dbsafe');
+		$item['image'] = arg('image');
+		$item['width'] = arg('width', 'int');
+		$item['height'] = arg('height', 'int');
+		$item['url'] = arg('url', 'dbsafe');
+		$item['target'] = arg('target', 'dbsafe');
+
 		if ($item['showTill'] == '')
 		{
 			unset($item['showTill']);
