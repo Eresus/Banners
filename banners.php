@@ -84,12 +84,17 @@ class Banners extends Plugin
 		'columns' => array(
 			array('name' => 'caption', 'caption' => 'Название'),
 			array('name' => 'block', 'caption' => 'Блок', 'align'=> 'right'),
-			array('name' => 'priority', 'caption' => '<span title="Приоритет" style="cursor: default;">&nbsp;&nbsp;*</span>', 'align'=>'center'),
-			array('name' => 'showTill', 'caption' => 'До даты', 'replace'=> array('0000-00-00'=> 'без огранич.')),
-			array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align'=>'right', 'replace' => array('0'=> 'без огранич.')),
+			array('name' => 'priority',
+				'caption' => '<span title="Приоритет" style="cursor: default;">&nbsp;&nbsp;*</span>',
+				'align'=>'center'),
+			array('name' => 'showTill', 'caption' => 'До даты',
+				'replace'=> array('0000-00-00'=> 'без огранич.')),
+			array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align'=>'right',
+				'replace' => array('0'=> 'без огранич.')),
 			array('name' => 'shows', 'caption' => 'Показан', 'align'=>'right'),
 			array('name' => 'clicks', 'caption' => 'Кликов', 'align'=>'right'),
-			//array('name' => 'mail', 'caption' => 'Владелец', 'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
+			//array('name' => 'mail', 'caption' => 'Владелец',
+			//'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
 		),
 		'controls' => array (
 			'delete' => '',
@@ -99,7 +104,7 @@ class Banners extends Plugin
 		'tabs' => array(
 			'width'=>'180px',
 			'items'=>array(
-			 array('caption'=>'Добавить баннер', 'name'=>'action', 'value'=>'create')
+				array('caption'=>'Добавить баннер', 'name'=>'action', 'value'=>'create')
 			),
 		),
 		'sql' => "(
@@ -191,15 +196,18 @@ class Banners extends Plugin
 		$items = $Eresus->db->select('`pages`',
 			"(`access` >= '" . USER . "') AND (`owner` = '" . $owner . "') AND (`active` = '1')",
 			"-position", "`id`,`caption`");
-		if (count($items)) foreach($items as $item)
+		if (count($items))
 		{
-			$result[0][] = str_repeat('- ', $level).$item['caption'];
-			$result[1][] = $item['id'];
-			$sub = $this->menuBranch($item['id'], $level+1);
-			if (count($sub[0]))
+			foreach ($items as $item)
 			{
-				$result[0] = array_merge($result[0], $sub[0]);
-				$result[1] = array_merge($result[1], $sub[1]);
+				$result[0][] = str_repeat('- ', $level).$item['caption'];
+				$result[1][] = $item['id'];
+				$sub = $this->menuBranch($item['id'], $level+1);
+				if (count($sub[0]))
+				{
+					$result[0] = array_merge($result[0], $sub[0]);
+					$result[1] = array_merge($result[1], $sub[1]);
+				}
 			}
 		}
 		return $result;
@@ -222,14 +230,18 @@ class Banners extends Plugin
 			$item['section'] = '|'.implode('|', arg('section')).'|';
 		}
 
-		if ($item['showTill'] == '') unset($item['showTill']);
+		if ($item['showTill'] == '')
+		{
+			unset($item['showTill']);
+		}
 
 		$Eresus->db->insert($this->table['name'], $item);
 
 		$item['id'] = $Eresus->db->getInsertedID();
 		if (is_uploaded_file($_FILES['image']['tmp_name']))
 		{
-			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
+			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'],
+				strrpos($_FILES['image']['name'], '.'));
 			upload('image', filesRoot.'data/'.$this->name.'/'.$filename);
 			$item['image'] = $filename;
 			$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
@@ -415,25 +427,47 @@ class Banners extends Plugin
 			'width' => '95%',
 			'fields' => array (
 				array ('type' => 'hidden','name'=>'update', 'value'=>$item['id']),
-				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>', 'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/', 'errormsg'=>'Заголовок не может быть пустым!'),
-				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>', 'width' => '100px', 'maxlength' => 15, 'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>','pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px', 'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'), 'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов', 'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений', 'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов', 'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0, 'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				//array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца', 'width' => '200px', 'maxlength' => '63'),
+				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+					'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
+					'errormsg'=>'Заголовок не может быть пустым!'),
+				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
+					'items'=>$sections[0], 'values'=>$sections[1]),
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+					'width' => '100px', 'maxlength' => 15,
+					'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
+					'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
+				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
+					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
+				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
+					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
+					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
+				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
+					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
+					'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
+				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
+					'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
+						'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
+				//array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
+				//'width' => '200px', 'maxlength' => '63'),
 				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
 				array ('type' => 'header', 'value' => 'Свойства баннера'),
-				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50', 'comment' => '<a></a>'),
-				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px', 'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px', 'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%', 'maxlength' => '255'),
-				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать', 'items'=>array('в новом окне', 'в том же окне')),
+				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50',
+					'comment' => '<a></a>'),
+				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
+					'comment'=>'только для Flash'),
+				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
+					'comment'=>'только для Flash'),
+				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+					'maxlength' => '255'),
+				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
+					'items'=>array('в новом окне', 'в том же окне')),
 				array ('type' => 'header', 'value' => 'HTML-код баннера'),
-				array ('type' => 'memo', 'name' => 'html', 'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)', 'height' => '4'),
+				array ('type' => 'memo', 'name' => 'html',
+					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)',
+					'height' => '4'),
 				array ('type' => 'divider'),
-				array ('type' => 'checkbox', 'name' => 'flushShowCount', 'label' => 'Обнулить кол-во показов'),
+				array ('type' => 'checkbox', 'name' => 'flushShowCount',
+					'label' => 'Обнулить кол-во показов'),
 			),
 			'buttons' => array('ok', 'apply', 'cancel'),
 		);
@@ -453,25 +487,39 @@ class Banners extends Plugin
 		global $Eresus, $page, $request, $session;
 
 		$result = '';
-		if (isset($request['arg']['id'])) {
-			$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."` = '".$request['arg']['id']."'");
+		if (isset($request['arg']['id']))
+		{
+			$item = $Eresus->db->selectItem($this->table['name'],
+				"`".$this->table['key']."` = '".$request['arg']['id']."'");
 			$page->title .= empty($item['caption'])?'':' - '.$item['caption'];
 		}
-		if (isset($request['arg']['update']) && isset($this->table['controls']['edit'])) {
-			if (method_exists($this, 'update')) $result = $this->update(); else $session['errorMessage'] = sprintf(errMethodNotFound, 'update', get_class($this));
-		} elseif (isset($request['arg']['toggle']) && isset($this->table['controls']['toggle'])) {
-			if (method_exists($this, 'toggle')) $result = $this->toggle($request['arg']['toggle']); else $session['errorMessage'] = sprintf(errMethodNotFound, 'toggle', get_class($this));
-		} elseif (isset($request['arg']['delete']) && isset($this->table['controls']['delete'])) {
-			if (method_exists($this, 'delete')) $result = $this->delete($request['arg']['delete']); else $session['errorMessage'] = sprintf(errMethodNotFound, 'delete', get_class($this));
-		} elseif (isset($request['arg']['id']) && isset($this->table['controls']['edit'])) {
-			if (method_exists($this, 'edit')) $result = $this->edit(); else $session['errorMessage'] = sprintf(errMethodNotFound, 'edit', get_class($this));
-		} elseif (isset($request['arg']['action'])) switch ($request['arg']['action']) {
-			case 'create': $result = $this->create(); break;
-			case 'insert':
-				if (method_exists($this, 'insert')) $result = $this->insert();
-				else $session['errorMessage'] = sprintf(errMethodNotFound, 'insert', get_class($this));
+		if (isset($request['arg']['update']) && isset($this->table['controls']['edit']))
+		{
+			$result = $this->update();
+		}
+		elseif (isset($request['arg']['toggle']) && isset($this->table['controls']['toggle']))
+		{
+			$result = $this->toggle($request['arg']['toggle']);
+		}
+		elseif (isset($request['arg']['delete']) && isset($this->table['controls']['delete']))
+		{
+			$result = $this->delete($request['arg']['delete']);
+		}
+		elseif (isset($request['arg']['id']) && isset($this->table['controls']['edit']))
+		{
+			$result = $this->edit();
+		}
+		elseif (isset($request['arg']['action'])) switch ($request['arg']['action'])
+		{
+			case 'create':
+				$result = $this->create();
 			break;
-		} else {
+			case 'insert':
+				$result = $this->insert();
+			break;
+		}
+		else
+		{
 			$result = $page->renderTable($this->table);
 		}
 		return $result;
@@ -481,51 +529,50 @@ class Banners extends Plugin
 
 	function adminRenderContent()
 	{
-	global $Eresus, $page;
+		global $Eresus, $page;
 
 		$result = '';
-		if (!is_null(arg('id'))) {
-			$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."` = '".arg('id', 'dbsafe')."'");
+		if (!is_null(arg('id')))
+		{
+			$item = $Eresus->db->selectItem($this->table['name'],
+				"`".$this->table['key']."` = '".arg('id', 'dbsafe')."'");
 			$page->title .= empty($item['caption'])?'':' - '.$item['caption'];
 		}
-		switch (true) {
-			case !is_null(arg('update')) && isset($this->table['controls']['edit']):
-				if (method_exists($this, 'update')) $result = $this->update(); else ErrorMessage(sprintf(errMethodNotFound, 'update', get_class($this)));
+		switch (true)
+		{
+			case !is_null(arg('update')):
+				$result = $this->update();
 			break;
-			case !is_null(arg('toggle')) && isset($this->table['controls']['toggle']):
-				if (method_exists($this, 'toggle')) $result = $this->toggle(arg('toggle', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'toggle', get_class($this)));
+			case !is_null(arg('toggle')):
+				$result = $this->toggle(arg('toggle', 'dbsafe'));
 			break;
-			case !is_null(arg('delete')) && isset($this->table['controls']['delete']):
-				if (method_exists($this, 'delete')) $result = $this->delete(arg('delete', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'delete', get_class($this)));
+			case !is_null(arg('delete')):
+				$result = $this->delete(arg('delete', 'dbsafe'));
 			break;
-			case !is_null(arg('up')) && isset($this->table['controls']['position']):
-				if (method_exists($this, 'up')) $result = $this->table['sortDesc']?$this->down(arg('up', 'dbsafe')):$this->up(arg('up', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'up', get_class($this)));
-			break;
-			case !is_null(arg('down')) && isset($this->table['controls']['position']):
-				if (method_exists($this, 'down')) $result = $this->table['sortDesc']?$this->up(arg('down', 'dbsafe')):$this->down(arg('down', 'dbsafe')); else ErrorMessage(sprintf(errMethodNotFound, 'down', get_class($this)));
-			break;
-			case !is_null(arg('id')) && isset($this->table['controls']['edit']):
-				if (method_exists($this, 'adminEditItem')) $result = $this->adminEditItem(); else ErrorMessage(sprintf(errMethodNotFound, 'adminEditItem', get_class($this)));
+			case !is_null(arg('id')):
+				$result = $this->adminEditItem();
 			break;
 			case !is_null(arg('action')):
-				switch (arg('action')) {
-					case 'create': if (isset($this->table['controls']['edit']))
-						if (method_exists($this, 'adminAddItem')) $result = $this->adminAddItem();
-						else ErrorMessage(sprintf(errMethodNotFound, 'adminAddItem', get_class($this)));
+				switch (arg('action'))
+				{
+					case 'create':
+						$result = $this->adminAddItem();
 					break;
 					case 'insert':
-						if (method_exists($this, 'insert')) $result = $this->insert();
-						else ErrorMessage(sprintf(errMethodNotFound, 'insert', get_class($this)));
+						$result = $this->insert();
 					break;
 				}
 			break;
 			default:
-				if (!is_null(arg('section'))) $this->table['condition'] = "`section`='".arg('section', 'int')."'";
+				if (!is_null(arg('section')))
+				{
+					$this->table['condition'] = "`section`='".arg('section', 'int')."'";
+				}
 				$result = $page->renderTable($this->table);
 		}
 		return $result;
 	}
-	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+	//-----------------------------------------------------------------------------
 
 	/**
 	 *
@@ -535,7 +582,8 @@ class Banners extends Plugin
 	{
 		global $page;
 
-		$page->addMenuItem(admExtensions, array ('access'	=> EDITOR, 'link'	=> $this->name, 'caption'	=> $this->title, 'hint'	=> $this->description));
+		$page->addMenuItem(admExtensions, array('access' => EDITOR, 'link' => $this->name,
+			'caption'	=> $this->title, 'hint'	=> $this->description));
 	}
 	//-----------------------------------------------------------------------------
 
@@ -571,13 +619,16 @@ class Banners extends Plugin
 		else
 		{
 			// Ищем все места встаки баннеров
-			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks,
+				PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
 			foreach ($blocks as $block)
 			{
 				$sql = "(`active`=1) AND (`section` LIKE '%|" . $page->id .
 					"|%' OR `section` LIKE '%|all|%') AND (`block`='" . $block[1][0 ] .
-					"') AND (`showFrom`<='" . gettime() . "') AND (`showCount`=0 OR (`shows` < `showCount`)) AND (`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
+					"') AND (`showFrom`<='" . gettime() .
+					"') AND (`showCount`=0 OR (`shows` < `showCount`)) AND " .
+					"(`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
 					gettime() . "')";
 
 				// Получаем баннеры для этого блока в порядке уменьшения приоритета
@@ -600,7 +651,8 @@ class Banners extends Plugin
 					$item['shows']++;
 					$banner = BannersFactory::createFromArray($item);
 
-					$Eresus->db->updateItem($this->name, $Eresus->db->escape($item), "`id`='".$item['id']."'");
+					$Eresus->db->updateItem($this->name, $Eresus->db->escape($item),
+						"`id`='".$item['id']."'");
 
 					$code = $banner->render();
 					$text = substr_replace($text, $code, $block[0][1]+$delta, strlen($block[0][0]));
@@ -612,12 +664,16 @@ class Banners extends Plugin
 				"') AND (`showTill` != '0000-00-00'))");
 			if (count($items))
 			{
-				foreach($items as $item)
+				foreach ($items as $item)
 				{
-					//sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].' был отключен, т.к. так как превышены количество показов либо дата показа."');
-					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "'.$item['caption'].' был отключен системой управления сайтом."');
+					/* sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].
+					 ' был отключен, т.к. так как превышены количество показов либо дата показа."'); */
+					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "' .
+						$item['caption'] . ' был отключен системой управления сайтом."');
 				}
-				$Eresus->db->update($this->table['name'], "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '".gettime()."') AND (`showTill` != '0000-00-00'))");
+				$Eresus->db->update($this->table['name'],
+					"`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" .
+					gettime() . "') AND (`showTill` != '0000-00-00'))");
 			}
 		}
 		return $text;
@@ -650,9 +706,10 @@ class Banners extends Plugin
 	{
 		global $Eresus;
 
-		$Eresus->db->query('CREATE TABLE IF NOT EXISTS `'.$Eresus->db->prefix.$table['name'].'`'.$table['sql']);
+		$Eresus->db->query('CREATE TABLE IF NOT EXISTS `' . $Eresus->db->prefix . $table['name'] .
+			'`'.$table['sql']);
 	}
-	#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+	//-----------------------------------------------------------------------------
 }
 
 
