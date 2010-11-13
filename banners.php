@@ -715,7 +715,14 @@ class Banners extends Plugin
 			$item['clicks']++;
 			$this->dbUpdate('', $item);
 
-			HTTP::redirect($item['url']);
+			if ($item['url'] == '#')
+			{
+				HTTP::goback();
+			}
+			else
+			{
+				HTTP::redirect($item['url']);
+			}
 		}
 		else
 		{
