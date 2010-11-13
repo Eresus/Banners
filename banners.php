@@ -715,13 +715,15 @@ class Banners extends Plugin
 			$item['clicks']++;
 			$this->dbUpdate('', $item);
 
-			if ($item['url'] == '#')
+			$url = $GLOBALS['page']->replaceMacros($item['url']);
+
+			if ($url == '#')
 			{
 				HTTP::goback();
 			}
 			else
 			{
-				HTTP::redirect($item['url']);
+				HTTP::redirect($url);
 			}
 		}
 		else
