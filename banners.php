@@ -46,7 +46,7 @@ class Banners extends Plugin
 	 * Требуемая версия ядра
 	 * @var string
 	 */
-	public $kernel = '2.13';
+	public $kernel = '2.15b';
 
 	/**
 	 * Название плагина
@@ -389,7 +389,8 @@ class Banners extends Plugin
 					'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
 					'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
 				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
-					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом',
+					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет ' .
+					'показан с большим приоритетом',
 					'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
 				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
 					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
@@ -417,7 +418,8 @@ class Banners extends Plugin
 					'items'=>array('в новом окне', 'в том же окне')),
 				array ('type' => 'header', 'value' => 'HTML-код баннера'),
 				array ('type' => 'memo', 'name' => 'html',
-					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)',
+					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут ' .
+					'не заполняться)',
 					'height' => '4'),
 			),
 			'buttons' => array('ok', 'cancel'),
@@ -485,7 +487,8 @@ class Banners extends Plugin
 					'items'=>array('в новом окне', 'в том же окне')),
 				array ('type' => 'header', 'value' => 'HTML-код баннера'),
 				array ('type' => 'memo', 'name' => 'html',
-					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут не заполняться)',
+					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут' .
+					'не заполняться)',
 					'height' => '4'),
 				array ('type' => 'divider'),
 				array ('type' => 'checkbox', 'name' => 'flushShowCount',
@@ -506,7 +509,7 @@ class Banners extends Plugin
 	 */
 	function adminRender()
 	{
-		global $Eresus, $page, $request, $session;
+		global $Eresus, $page, $request;
 
 		$result = '';
 		if (isset($request['arg']['id']))
@@ -880,7 +883,7 @@ class FlashBanner extends AbstractBanner
 				'<param name="wmode" value="opaque" />' .
 			'</object>';
 
-		$swf = $plugin->urlData . $this->data['image'];
+		$swf = $plugin->getDataURL() . $this->data['image'];
 		$width = $this->data['width'];
 		$height = $this->data['height'];
 
@@ -888,7 +891,7 @@ class FlashBanner extends AbstractBanner
 
 		if (!empty($this->data['url']))
 		{
-			$page->linkStyles($plugin->urlCode . 'main.css');
+			$page->linkStyles($plugin->getCodeURL() . 'main.css');
 
 			$template =
 				'<div class="banners-swf-container">' .
