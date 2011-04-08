@@ -193,7 +193,7 @@ class Banners extends Plugin
 		global $Eresus;
 
 		$result = array(array(), array());
-		$items = $Eresus->db->select('`pages`',
+		$items = $Eresus->db->select('pages',
 			"(`access` >= '" . USER . "') AND (`owner` = '" . $owner . "') AND (`active` = '1')",
 			"-position", "`id`,`caption`");
 		if (count($items))
