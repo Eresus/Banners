@@ -64,7 +64,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '2.02b';
+	public $version = '2.02';
 
 	/**
 	 * Описание
