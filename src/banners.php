@@ -46,7 +46,7 @@ class Banners extends Plugin
 	 * Требуемая версия ядра
 	 * @var string
 	 */
-	public $kernel = '2.15b';
+	public $kernel = '2.15';
 
 	/**
 	 * Название плагина
@@ -693,7 +693,7 @@ class Banners extends Plugin
 				{
 					/* sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].
 					 ' был отключен, т.к. так как превышены количество показов либо дата показа."'); */
-					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "' .
+					sendMail(option('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "' .
 						$item['caption'] . ' был отключен системой управления сайтом."');
 				}
 				$Eresus->db->update($this->table['name'],
