@@ -4,12 +4,12 @@
  *
  * Система показа баннеров.
  *
- * @version: 2.01
+ * @version: 2.02
  *
  * @copyright 2005, ProCreat Systems, http://procreat.ru/
  * @copyright 2007, Eresus Group, http://eresus.ru/
  * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
- * @author Mikhail Krasilnikov <mk@procreat.ru>
+ * @author Михаил Красильников <mihalych@vsepofigu.ru>
  * @author БерсЪ <bersz@procreat.ru>
  * @author dkDimon <dkdimon@mail.ru>
  * @author ghost
@@ -64,7 +64,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '2.01';
+	public $version = '2.02b';
 
 	/**
 	 * Описание
@@ -193,7 +193,7 @@ class Banners extends Plugin
 		global $Eresus;
 
 		$result = array(array(), array());
-		$items = $Eresus->db->select('`pages`',
+		$items = $Eresus->db->select('pages',
 			"(`access` >= '" . USER . "') AND (`owner` = '" . $owner . "') AND (`active` = '1')",
 			"-position", "`id`,`caption`");
 		if (count($items))
@@ -693,7 +693,7 @@ class Banners extends Plugin
 				{
 					/* sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].
 					 ' был отключен, т.к. так как превышены количество показов либо дата показа."'); */
-					sendMail(getOption('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "' .
+					sendMail(option('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "' .
 						$item['caption'] . ' был отключен системой управления сайтом."');
 				}
 				$Eresus->db->update($this->table['name'],
