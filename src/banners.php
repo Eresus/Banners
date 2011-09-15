@@ -311,6 +311,13 @@ class Banners extends Plugin
 
 		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
 
+		if ($item['showTill'] == '')
+		{
+			$Eresus->db->query(
+				"UPDATE ".$Eresus->db->options->tableNamePrefix.$this->table['name'].
+				" SET `showTill` = NULL WHERE `id`='".$item['id']."'");
+		}
+
 		HTTP::redirect($request['arg']['submitURL']);
 	}
 	//-----------------------------------------------------------------------------
