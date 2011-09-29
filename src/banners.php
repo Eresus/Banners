@@ -4,7 +4,7 @@
  *
  * Система показа баннеров.
  *
- * @version: 2.02
+ * @version: 2.03
  *
  * @copyright 2005, ProCreat Systems, http://procreat.ru/
  * @copyright 2007, Eresus Group, http://eresus.ru/
@@ -64,7 +64,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '2.02a';
+	public $version = '2.03a';
 
 	/**
 	 * Описание
