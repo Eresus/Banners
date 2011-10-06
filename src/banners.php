@@ -143,15 +143,7 @@ class Banners extends Plugin
 	function __construct()
 	{
 		parent::__construct();
-
-		if (defined('CLIENTUI'))
-		{
-			$this->listenEvents('clientOnPageRender');
-		}
-		else
-		{
-			$this->listenEvents('adminOnMenuRender');
-		}
+		$this->listenEvents('clientOnPageRender', 'adminOnMenuRender');
 	}
 	//-----------------------------------------------------------------------------
 
