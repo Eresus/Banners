@@ -64,7 +64,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '2.03a';
+	public $version = '2.03b';
 
 	/**
 	 * Описание
@@ -651,7 +651,7 @@ class Banners extends Plugin
 				$sql = "(`active`=1) AND (`section` LIKE '%|" . $page->id .
 					"|%' OR `section` LIKE '%|all|%') AND (`block`='" . $block[1][0 ] .
 					"') AND (`showFrom`<='" . gettime() .
-					"') AND (`showCount`=0 OR (`shows` < `showCount`)) AND " .
+					"') AND (`showCount`=0 OR (`shows` < `showCount`) OR `shows` IS NULL) AND " .
 					"(`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
 					gettime() . "')";
 
