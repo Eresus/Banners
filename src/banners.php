@@ -4,7 +4,7 @@
  *
  * Система показа баннеров.
  *
- * @version: 2.02
+ * @version: 2.03
  *
  * @copyright 2005, ProCreat Systems, http://procreat.ru/
  * @copyright 2007, Eresus Group, http://eresus.ru/
@@ -64,7 +64,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '2.02';
+	public $version = '2.03';
 
 	/**
 	 * Описание
@@ -143,15 +143,7 @@ class Banners extends Plugin
 	function __construct()
 	{
 		parent::__construct();
-
-		if (defined('CLIENTUI'))
-		{
-			$this->listenEvents('clientOnPageRender');
-		}
-		else
-		{
-			$this->listenEvents('adminOnMenuRender');
-		}
+		$this->listenEvents('clientOnPageRender', 'adminOnMenuRender');
 	}
 	//-----------------------------------------------------------------------------
 
@@ -310,6 +302,13 @@ class Banners extends Plugin
 		}
 
 		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+
+		if ($item['showTill'] == '')
+		{
+			$Eresus->db->query(
+				"UPDATE ".$Eresus->db->options->tableNamePrefix.$this->table['name'].
+				" SET `showTill` = NULL WHERE `id`='".$item['id']."'");
+		}
 
 		HTTP::redirect($request['arg']['submitURL']);
 	}
@@ -652,7 +651,7 @@ class Banners extends Plugin
 				$sql = "(`active`=1) AND (`section` LIKE '%|" . $page->id .
 					"|%' OR `section` LIKE '%|all|%') AND (`block`='" . $block[1][0 ] .
 					"') AND (`showFrom`<='" . gettime() .
-					"') AND (`showCount`=0 OR (`shows` < `showCount`)) AND " .
+					"') AND (`showCount`=0 OR (`shows` < `showCount`) OR `shows` IS NULL) AND " .
 					"(`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
 					gettime() . "')";
 
