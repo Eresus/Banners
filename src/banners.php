@@ -190,7 +190,7 @@ class Banners extends Plugin
 		{
 			foreach ($items as $item)
 			{
-				$result[0][] = str_repeat('- ', $level).$item['caption'];
+				$result[0][] = str_repeat('- ', $level) . $item['caption'];
 				$result[1][] = $item['id'];
 				$sub = $this->menuBranch($item['id'], $level+1);
 				if (count($sub[0]))
@@ -240,11 +240,11 @@ class Banners extends Plugin
 		$item['id'] = $Eresus->db->getInsertedID();
 		if (is_uploaded_file($_FILES['image']['tmp_name']))
 		{
-			$filename = 'banner'.$item['id'].substr($_FILES['image']['name'],
+			$filename = 'banner' . $item['id'] . substr($_FILES['image']['name'],
 				strrpos($_FILES['image']['name'], '.'));
-			upload('image', filesRoot.'data/'.$this->name.'/'.$filename);
+			upload('image', filesRoot . 'data/' . $this->name . '/' . $filename);
 			$item['image'] = $filename;
-			$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+			$Eresus->db->updateItem($this->table['name'], $item, "`id`='" . $item['id']."'");
 		}
 		HTTP::redirect($request['arg']['submitURL']);
 	}
@@ -677,8 +677,11 @@ class Banners extends Plugin
 						"`id`='".$item['id']."'");
 
 					$code = $banner->render();
-					$text = substr_replace($text, $code, $block[0][1]+$delta, strlen($block[0][0]));
-					$delta += strlen($code) - strlen($block[0][0]);
+					$start = $block[0][1] + $delta;
+					$length = mb_strlen($block[0][0]);
+					$text = mb_substr($text, 0, $start) . $code . mb_substr($text, $start + $length);
+
+					$delta += mb_strlen($code) - $length;
 				}
 			}
 			$items = $Eresus->db->select($this->table['name'],
