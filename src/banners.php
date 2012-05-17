@@ -1,33 +1,31 @@
 <?php
 /**
- * Banners
+ * РЎРёСЃС‚РµРјР° РїРѕРєР°Р·Р° Р±Р°РЅРЅРµСЂРѕРІ
  *
- * Система показа баннеров.
- *
- * @version: 2.03
+ * @version: 3.00
  *
  * @copyright 2005, ProCreat Systems, http://procreat.ru/
  * @copyright 2007, Eresus Group, http://eresus.ru/
  * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
- * @author Михаил Красильников <mihalych@vsepofigu.ru>
- * @author БерсЪ <bersz@procreat.ru>
+ * @author РњРёС…Р°РёР» РљСЂР°СЃРёР»СЊРЅРёРєРѕРІ <mihalych@vsepofigu.ru>
+ * @author Р‘РµСЂСЃРЄ <bersz@procreat.ru>
  * @author dkDimon <dkdimon@mail.ru>
  * @author ghost
  *
- * Данная программа является свободным программным обеспечением. Вы
- * вправе распространять ее и/или модифицировать в соответствии с
- * условиями версии 3 либо по вашему выбору с условиями более поздней
- * версии Стандартной Общественной Лицензии GNU, опубликованной Free
+ * Р”Р°РЅРЅР°СЏ РїСЂРѕРіСЂР°РјРјР° СЏРІР»СЏРµС‚СЃСЏ СЃРІРѕР±РѕРґРЅС‹Рј РїСЂРѕРіСЂР°РјРјРЅС‹Рј РѕР±РµСЃРїРµС‡РµРЅРёРµРј. Р’С‹
+ * РІРїСЂР°РІРµ СЂР°СЃРїСЂРѕСЃС‚СЂР°РЅСЏС‚СЊ РµРµ Рё/РёР»Рё РјРѕРґРёС„РёС†РёСЂРѕРІР°С‚СЊ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ
+ * СѓСЃР»РѕРІРёСЏРјРё РІРµСЂСЃРёРё 3 Р»РёР±Рѕ РїРѕ РІР°С€РµРјСѓ РІС‹Р±РѕСЂСѓ СЃ СѓСЃР»РѕРІРёСЏРјРё Р±РѕР»РµРµ РїРѕР·РґРЅРµР№
+ * РІРµСЂСЃРёРё РЎС‚Р°РЅРґР°СЂС‚РЅРѕР№ РћР±С‰РµСЃС‚РІРµРЅРЅРѕР№ Р›РёС†РµРЅР·РёРё GNU, РѕРїСѓР±Р»РёРєРѕРІР°РЅРЅРѕР№ Free
  * Software Foundation.
  *
- * Мы распространяем эту программу в надежде на то, что она будет вам
- * полезной, однако НЕ ПРЕДОСТАВЛЯЕМ НА НЕЕ НИКАКИХ ГАРАНТИЙ, в том
- * числе ГАРАНТИИ ТОВАРНОГО СОСТОЯНИЯ ПРИ ПРОДАЖЕ и ПРИГОДНОСТИ ДЛЯ
- * ИСПОЛЬЗОВАНИЯ В КОНКРЕТНЫХ ЦЕЛЯХ. Для получения более подробной
- * информации ознакомьтесь со Стандартной Общественной Лицензией GNU.
+ * РњС‹ СЂР°СЃРїСЂРѕСЃС‚СЂР°РЅСЏРµРј СЌС‚Сѓ РїСЂРѕРіСЂР°РјРјСѓ РІ РЅР°РґРµР¶РґРµ РЅР° С‚Рѕ, С‡С‚Рѕ РѕРЅР° Р±СѓРґРµС‚ РІР°Рј
+ * РїРѕР»РµР·РЅРѕР№, РѕРґРЅР°РєРѕ РќР• РџР Р•Р”РћРЎРўРђР’Р›РЇР•Рњ РќРђ РќР•Р• РќРРљРђРљРРҐ Р“РђР РђРќРўРР™, РІ С‚РѕРј
+ * С‡РёСЃР»Рµ Р“РђР РђРќРўРР РўРћР’РђР РќРћР“Рћ РЎРћРЎРўРћРЇРќРРЇ РџР Р РџР РћР”РђР–Р• Рё РџР РР“РћР”РќРћРЎРўР Р”Р›РЇ
+ * РРЎРџРћР›Р¬Р—РћР’РђРќРРЇ Р’ РљРћРќРљР Р•РўРќР«РҐ Р¦Р•Р›РЇРҐ. Р”Р»СЏ РїРѕР»СѓС‡РµРЅРёСЏ Р±РѕР»РµРµ РїРѕРґСЂРѕР±РЅРѕР№
+ * РёРЅС„РѕСЂРјР°С†РёРё РѕР·РЅР°РєРѕРјСЊС‚РµСЃСЊ СЃРѕ РЎС‚Р°РЅРґР°СЂС‚РЅРѕР№ РћР±С‰РµСЃС‚РІРµРЅРЅРѕР№ Р›РёС†РµРЅР·РёРµР№ GNU.
  *
- * Вы должны были получить копию Стандартной Общественной Лицензии
- * GNU с этой программой. Если Вы ее не получили, смотрите документ на
+ * Р’С‹ РґРѕР»Р¶РЅС‹ Р±С‹Р»Рё РїРѕР»СѓС‡РёС‚СЊ РєРѕРїРёСЋ РЎС‚Р°РЅРґР°СЂС‚РЅРѕР№ РћР±С‰РµСЃС‚РІРµРЅРЅРѕР№ Р›РёС†РµРЅР·РёРё
+ * GNU СЃ СЌС‚РѕР№ РїСЂРѕРіСЂР°РјРјРѕР№. Р•СЃР»Рё Р’С‹ РµРµ РЅРµ РїРѕР»СѓС‡РёР»Рё, СЃРјРѕС‚СЂРёС‚Рµ РґРѕРєСѓРјРµРЅС‚ РЅР°
  * <http://www.gnu.org/licenses/>
  *
  * @package Banners
@@ -36,44 +34,44 @@
  */
 
 /**
- * Класс плагина
+ * РљР»Р°СЃСЃ РїР»Р°РіРёРЅР°
  *
  * @package Banners
  */
 class Banners extends Plugin
 {
 	/**
-	 * Требуемая версия ядра
+	 * РўСЂРµР±СѓРµРјР°СЏ РІРµСЂСЃРёСЏ СЏРґСЂР°
 	 * @var string
 	 */
-	public $kernel = '2.15';
+	public $kernel = '3.00b';
 
 	/**
-	 * Название плагина
+	 * РќР°Р·РІР°РЅРёРµ РїР»Р°РіРёРЅР°
 	 * @var string
 	 */
-	public $title = 'Баннеры';
+	public $title = 'Р‘Р°РЅРЅРµСЂС‹';
 
 	/**
-	 * Тип
+	 * РўРёРї
 	 * @var string
 	 */
 	public $type = 'client,admin';
 
 	/**
-	 * Версия
+	 * Р’РµСЂСЃРёСЏ
 	 * @var string
 	 */
-	public $version = '2.03b';
+	public $version = '3.00a';
 
 	/**
-	 * Описание
+	 * РћРїРёСЃР°РЅРёРµ
 	 * @var string
 	 */
-	public $description = 'Система показа баннеров';
+	public $description = 'РЎРёСЃС‚РµРјР° РїРѕРєР°Р·Р° Р±Р°РЅРЅРµСЂРѕРІ';
 
 	/**
-	 * Таблица АИ
+	 * РўР°Р±Р»РёС†Р° РђР
 	 * @var array
 	 */
 	private $table = array (
@@ -82,18 +80,18 @@ class Banners extends Plugin
 		'sortMode' => 'id',
 		'sortDesc' => false,
 		'columns' => array(
-			array('name' => 'caption', 'caption' => 'Название'),
-			array('name' => 'block', 'caption' => 'Блок', 'align'=> 'right'),
+			array('name' => 'caption', 'caption' => 'РќР°Р·РІР°РЅРёРµ'),
+			array('name' => 'block', 'caption' => 'Р‘Р»РѕРє', 'align'=> 'right'),
 			array('name' => 'priority',
-				'caption' => '<span title="Приоритет" style="cursor: default;">&nbsp;&nbsp;*</span>',
+				'caption' => '<span title="РџСЂРёРѕСЂРёС‚РµС‚" style="cursor: default;">&nbsp;&nbsp;*</span>',
 				'align'=>'center'),
-			array('name' => 'showTill', 'caption' => 'До даты',
-				'replace'=> array('0000-00-00'=> 'без огранич.')),
-			array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align'=>'right',
-				'replace' => array('0'=> 'без огранич.')),
-			array('name' => 'shows', 'caption' => 'Показан', 'align'=>'right'),
-			array('name' => 'clicks', 'caption' => 'Кликов', 'align'=>'right'),
-			//array('name' => 'mail', 'caption' => 'Владелец',
+			array('name' => 'showTill', 'caption' => 'Р”Рѕ РґР°С‚С‹',
+				'replace'=> array('0000-00-00'=> 'Р±РµР· РѕРіСЂР°РЅРёС‡.')),
+			array('name' => 'showCount', 'caption' => 'РњР°РєСЃ.РїРѕРєР°Р·.', 'align'=>'right',
+				'replace' => array('0'=> 'Р±РµР· РѕРіСЂР°РЅРёС‡.')),
+			array('name' => 'shows', 'caption' => 'РџРѕРєР°Р·Р°РЅ', 'align'=>'right'),
+			array('name' => 'clicks', 'caption' => 'РљР»РёРєРѕРІ', 'align'=>'right'),
+			//array('name' => 'mail', 'caption' => 'Р’Р»Р°РґРµР»РµС†',
 			//'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
 		),
 		'controls' => array (
@@ -104,7 +102,7 @@ class Banners extends Plugin
 		'tabs' => array(
 			'width'=>'180px',
 			'items'=>array(
-				array('caption'=>'Добавить баннер', 'name'=>'action', 'value'=>'create')
+				array('caption'=>'Р”РѕР±Р°РІРёС‚СЊ Р±Р°РЅРЅРµСЂ', 'name'=>'action', 'value'=>'create')
 			),
 		),
 		'sql' => "(
@@ -136,9 +134,9 @@ class Banners extends Plugin
 	);
 
 	/**
-	 * Конструктор
+	 * РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	 *
-	 * Производит регистрацию обработчиков событий.
+	 * РџСЂРѕРёР·РІРѕРґРёС‚ СЂРµРіРёСЃС‚СЂР°С†РёСЋ РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ СЃРѕР±С‹С‚РёР№.
 	 */
 	function __construct()
 	{
@@ -148,7 +146,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Возвращает путь к директории данныз плагина
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСѓС‚СЊ Рє РґРёСЂРµРєС‚РѕСЂРёРё РґР°РЅРЅС‹С… РїР»Р°РіРёРЅР°
 	 *
 	 * @return string
 	 *
@@ -161,7 +159,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Действия при установке плагина
+	 * Р”РµР№СЃС‚РІРёСЏ РїСЂРё СѓСЃС‚Р°РЅРѕРІРєРµ РїР»Р°РіРёРЅР°
 	 */
 	function install()
 	{
@@ -174,7 +172,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Возвращает ветку разделов сайта
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РІРµС‚РєСѓ СЂР°Р·РґРµР»РѕРІ СЃР°Р№С‚Р°
 	 *
 	 * @param int $owner[optional]
 	 * @param int $level[optional]
@@ -207,7 +205,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Добавляет баннер в БД
+	 * Р”РѕР±Р°РІР»СЏРµС‚ Р±Р°РЅРЅРµСЂ РІ Р‘Р”
 	 *
 	 * @return void
 	 */
@@ -253,7 +251,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Обновляет баннер в БД
+	 * РћР±РЅРѕРІР»СЏРµС‚ Р±Р°РЅРЅРµСЂ РІ Р‘Р”
 	 * @return void
 	 */
 	private function update()
@@ -307,7 +305,7 @@ class Banners extends Plugin
 		{
 			$Eresus->db->query(
 				"UPDATE ".$Eresus->db->options->tableNamePrefix.$this->table['name'].
-				" SET `showTill` = NULL WHERE `id`='".$item['id']."'");
+					" SET `showTill` = NULL WHERE `id`='".$item['id']."'");
 		}
 
 		HTTP::redirect($request['arg']['submitURL']);
@@ -315,7 +313,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Переключает активность баннера
+	 * РџРµСЂРµРєР»СЋС‡Р°РµС‚ Р°РєС‚РёРІРЅРѕСЃС‚СЊ Р±Р°РЅРЅРµСЂР°
 	 *
 	 * @param int $id
 	 * @return void
@@ -335,7 +333,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Удаляет баннер
+	 * РЈРґР°Р»СЏРµС‚ Р±Р°РЅРЅРµСЂ
 	 *
 	 * @param int $id
 	 * @return void
@@ -360,7 +358,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Возвращает диалог добавления баннера
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ Р±Р°РЅРЅРµСЂР°
 	 *
 	 * @return string  HTML
 	 */
@@ -370,55 +368,55 @@ class Banners extends Plugin
 
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
-		array_unshift($sections[0], 'ВСЕ РАЗДЕЛЫ');
+		array_unshift($sections[0], 'Р’РЎР• Р РђР—Р”Р•Р›Р«');
 		array_unshift($sections[1], 'all');
 		$form = array(
 			'name' => 'formCreate',
-			'caption' => 'Добавить баннер',
+			'caption' => 'Р”РѕР±Р°РІРёС‚СЊ Р±Р°РЅРЅРµСЂ',
 			'width' => '600px',
 			'fields' => array (
 				array ('type'=>'hidden','name'=>'action', 'value'=>'insert'),
-				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Р—Р°РіРѕР»РѕРІРѕРє</b>',
 					'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
-					'errormsg'=>'Заголовок не может быть пустым!'),
-				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
+					'errormsg'=>'Р—Р°РіРѕР»РѕРІРѕРє РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј!'),
+				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Р Р°Р·РґРµР»С‹</b>', 'height'=> 5,
 					'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Р‘Р»РѕРє Р±Р°РЅРЅРµСЂР°</b>',
 					'width' => '100px', 'maxlength' => 31,
-					'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
-					'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
-					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет ' .
-					'показан с большим приоритетом',
-					'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
-					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
-					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
-					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
+					'comment' => 'Р”Р»СЏ РІСЃС‚Р°РІРєРё Р±Р°РЅРЅРµСЂР° РёСЃРїРѕР»СЊР·СѓР№С‚Рµ РјР°РєСЂРѕСЃ <b>$(Banners:РёРјСЏ_Р±Р»РѕРєР°)</b>',
+					'pattern'=>'/.+/', 'errormsg'=>'РќРµ СѓРєР°Р·Р°РЅ Р±Р»РѕРє Р±Р°РЅРЅРµСЂР°!'),
+				array ('type' => 'edit', 'name' => 'priority', 'label' => 'РџСЂРёРѕСЂРёС‚РµС‚', 'width' => '20px',
+					'comment' => 'Р•СЃР»Рё РґР»СЏ РѕРґРЅРѕРіРѕ СЂР°Р·РґРµР»Р° Рё РѕРґРЅРѕРіРѕ Р±Р»РѕРєР° Р·Р°РґР°РЅРѕ РЅРµСЃРєРѕР»СЊРєРѕ Р±Р°РЅРЅРµСЂРѕРІ, Р±СѓРґРµС‚ ' .
+						'РїРѕРєР°Р·Р°РЅ СЃ Р±РѕР»СЊС€РёРј РїСЂРёРѕСЂРёС‚РµС‚РѕРј',
+					'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'РџСЂРёРѕСЂРёС‚РµС‚ Р·Р°РґР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РёС„СЂР°РјРё!'),
+				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'РќР°С‡Р°Р»Рѕ РїРѕРєР°Р·РѕРІ',
+					'width' => '100px', 'comment' => 'Р“Р“Р“Р“-РњРњ-Р”Р”', 'default'=>gettime('Y-m-d'),
+					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°С‚С‹!'),
+				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'РљРѕРЅРµС† РїРѕРєР°Р·РѕРІ',
+					'width' => '100px', 'comment' => 'Р“Р“Р“Р“-РњРњ-Р”Р”; РџСѓСЃС‚РѕРµ - Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№',
 					'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/',
-					'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
-					'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
-					'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				/*array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
+					'errormsg'=>'РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°С‚С‹!'),
+				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'РњР°РєСЃ. РєРѕР»-РІРѕ РїРѕРєР°Р·РѕРІ',
+					'width' => '100px', 'comment' => '0 - Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№', 'default'=>0,
+					'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'РљРѕР»-РІРѕ РїРѕРєР°Р·РѕРІ Р·Р°РґР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РёС„СЂР°РјРё!'),
+				/*array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail РІР»Р°РґРµР»СЊС†Р°',
 					'width' => '200px', 'maxlength' => '63'),*/
-				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать',
+				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'РђРєС‚РёРІРёСЂРѕРІР°С‚СЊ',
 					'default' => true),
-				array ('type' => 'header', 'value' => 'Свойства баннера'),
-				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50'),
-				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
-					'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
-					'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+				array ('type' => 'header', 'value' => 'РЎРІРѕР№СЃС‚РІР° Р±Р°РЅРЅРµСЂР°'),
+				array ('type' => 'file', 'name' => 'image', 'label' => 'РљР°СЂС‚РёРЅРєР° РёР»Рё Flash', 'width'=>'50'),
+				array ('type' => 'edit', 'name' => 'width', 'label' => 'РЁРёСЂРёРЅР°', 'width' => '100px',
+					'comment'=>'С‚РѕР»СЊРєРѕ РґР»СЏ Flash'),
+				array ('type' => 'edit', 'name' => 'height', 'label' => 'Р’С‹СЃРѕС‚Р°', 'width' => '100px',
+					'comment'=>'С‚РѕР»СЊРєРѕ РґР»СЏ Flash'),
+				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL РґР»СЏ СЃСЃС‹Р»РєРё', 'width' => '100%',
 					'maxlength' => '255'),
-				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
-					'items'=>array('в новом окне', 'в том же окне')),
-				array ('type' => 'header', 'value' => 'HTML-код баннера'),
+				array ('type' => 'select', 'name' => 'target', 'label' => 'РћС‚РєСЂС‹РІР°С‚СЊ',
+					'items'=>array('РІ РЅРѕРІРѕРј РѕРєРЅРµ', 'РІ С‚РѕРј Р¶Рµ РѕРєРЅРµ')),
+				array ('type' => 'header', 'value' => 'HTML-РєРѕРґ Р±Р°РЅРЅРµСЂР°'),
 				array ('type' => 'memo', 'name' => 'html',
-					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут ' .
-					'не заполняться)',
+					'label' => 'HTML-РєРѕРґ (Р•СЃР»Рё Р·Р°РґР°РЅ HTML-РєРѕРґ, С‚Рѕ РїСЂРµРґС‹РґСѓС‰РёРµ СЃРІРѕР№СЃС‚РІР° РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ Рё РјРѕРіСѓС‚ ' .
+						'РЅРµ Р·Р°РїРѕР»РЅСЏС‚СЊСЃСЏ)',
 					'height' => '4'),
 			),
 			'buttons' => array('ok', 'cancel'),
@@ -430,7 +428,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Возвращает диалог изменения баннера
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРёР°Р»РѕРі РёР·РјРµРЅРµРЅРёСЏ Р±Р°РЅРЅРµСЂР°
 	 *
 	 * @return string  HMTL
 	 */
@@ -442,56 +440,56 @@ class Banners extends Plugin
 		$item['section'] = explode('|', $item['section']);
 		$sections = array(array(), array());
 		$sections = $this->menuBranch();
-		array_unshift($sections[0], 'ВСЕ РАЗДЕЛЫ');
+		array_unshift($sections[0], 'Р’РЎР• Р РђР—Р”Р•Р›Р«');
 		array_unshift($sections[1], 'all');
 		$form = array(
 			'name' => 'formEdit',
-			'caption' => 'Изменить баннер',
+			'caption' => 'РР·РјРµРЅРёС‚СЊ Р±Р°РЅРЅРµСЂ',
 			'width' => '95%',
 			'fields' => array (
 				array ('type' => 'hidden','name'=>'update', 'value'=>$item['id']),
-				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+				array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Р—Р°РіРѕР»РѕРІРѕРє</b>',
 					'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
-					'errormsg'=>'Заголовок не может быть пустым!'),
-				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
+					'errormsg'=>'Р—Р°РіРѕР»РѕРІРѕРє РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј!'),
+				array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Р Р°Р·РґРµР»С‹</b>', 'height'=> 5,
 					'items'=>$sections[0], 'values'=>$sections[1]),
-				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+				array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Р‘Р»РѕРє Р±Р°РЅРЅРµСЂР°</b>',
 					'width' => '100px', 'maxlength' => 15,
-					'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
-					'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-				array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
-					'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
-					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
-					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
-					'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
-					'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
-				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
-					'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
-						'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
-				//array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
+					'comment' => 'Р”Р»СЏ РІСЃС‚Р°РІРєРё Р±Р°РЅРЅРµСЂР° РёСЃРїРѕР»СЊР·СѓР№С‚Рµ РјР°РєСЂРѕСЃ <b>$(Banners:РёРјСЏ_Р±Р»РѕРєР°)</b>',
+					'pattern'=>'/.+/', 'errormsg'=>'РќРµ СѓРєР°Р·Р°РЅ Р±Р»РѕРє Р±Р°РЅРЅРµСЂР°!'),
+				array ('type' => 'edit', 'name' => 'priority', 'label' => 'РџСЂРёРѕСЂРёС‚РµС‚', 'width' => '20px',
+					'comment' => 'Р•СЃР»Рё РґР»СЏ РѕРґРЅРѕРіРѕ СЂР°Р·РґРµР»Р° Рё РѕРґРЅРѕРіРѕ Р±Р»РѕРєР° Р·Р°РґР°РЅРѕ РЅРµСЃРєРѕР»СЊРєРѕ Р±Р°РЅРЅРµСЂРѕРІ, Р±СѓРґРµС‚ РїРѕРєР°Р·Р°РЅ СЃ Р±РѕР»СЊС€РёРј РїСЂРёРѕСЂРёС‚РµС‚РѕРј', 'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'РџСЂРёРѕСЂРёС‚РµС‚ Р·Р°РґР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РёС„СЂР°РјРё!'),
+				array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'РќР°С‡Р°Р»Рѕ РїРѕРєР°Р·РѕРІ',
+					'width' => '100px', 'comment' => 'Р“Р“Р“Р“-РњРњ-Р”Р”', 'default'=>gettime('Y-m-d'),
+					'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°С‚С‹!'),
+				array ('type' => 'edit', 'name' => 'showTill', 'label' => 'РљРѕРЅРµС† РїРѕРєР°Р·РѕРІ',
+					'width' => '100px', 'comment' => 'Р“Р“Р“Р“-РњРњ-Р”Р”; РџСѓСЃС‚РѕРµ - Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№',
+					'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°С‚С‹!'),
+				array ('type' => 'edit', 'name' => 'showCount', 'label' => 'РњР°РєСЃ. РєРѕР»-РІРѕ РїРѕРєР°Р·РѕРІ',
+					'width' => '100px', 'comment' => '0 - Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№', 'default'=>0,
+					'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'РљРѕР»-РІРѕ РїРѕРєР°Р·РѕРІ Р·Р°РґР°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ С†РёС„СЂР°РјРё!'),
+				//array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail РІР»Р°РґРµР»СЊС†Р°',
 				//'width' => '200px', 'maxlength' => '63'),
-				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
-				array ('type' => 'header', 'value' => 'Свойства баннера'),
-				array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50',
+				array ('type' => 'checkbox', 'name' => 'active', 'label' => 'РђРєС‚РёРІРёСЂРѕРІР°С‚СЊ'),
+				array ('type' => 'header', 'value' => 'РЎРІРѕР№СЃС‚РІР° Р±Р°РЅРЅРµСЂР°'),
+				array ('type' => 'file', 'name' => 'image', 'label' => 'РљР°СЂС‚РёРЅРєР° РёР»Рё Flash', 'width'=>'50',
 					'comment' => '<a></a>'),
-				array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
-					'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
-					'comment'=>'только для Flash'),
-				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+				array ('type' => 'edit', 'name' => 'width', 'label' => 'РЁРёСЂРёРЅР°', 'width' => '100px',
+					'comment'=>'С‚РѕР»СЊРєРѕ РґР»СЏ Flash'),
+				array ('type' => 'edit', 'name' => 'height', 'label' => 'Р’С‹СЃРѕС‚Р°', 'width' => '100px',
+					'comment'=>'С‚РѕР»СЊРєРѕ РґР»СЏ Flash'),
+				array ('type' => 'edit', 'name' => 'url', 'label' => 'URL РґР»СЏ СЃСЃС‹Р»РєРё', 'width' => '100%',
 					'maxlength' => '255'),
-				array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
-					'items'=>array('в новом окне', 'в том же окне')),
-				array ('type' => 'header', 'value' => 'HTML-код баннера'),
+				array ('type' => 'select', 'name' => 'target', 'label' => 'РћС‚РєСЂС‹РІР°С‚СЊ',
+					'items'=>array('РІ РЅРѕРІРѕРј РѕРєРЅРµ', 'РІ С‚РѕРј Р¶Рµ РѕРєРЅРµ')),
+				array ('type' => 'header', 'value' => 'HTML-РєРѕРґ Р±Р°РЅРЅРµСЂР°'),
 				array ('type' => 'memo', 'name' => 'html',
-					'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут' .
-					'не заполняться)',
+					'label' => 'HTML-РєРѕРґ (Р•СЃР»Рё Р·Р°РґР°РЅ HTML-РєРѕРґ, С‚Рѕ РїСЂРµРґС‹РґСѓС‰РёРµ СЃРІРѕР№СЃС‚РІР° РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ Рё РјРѕРіСѓС‚' .
+						'РЅРµ Р·Р°РїРѕР»РЅСЏС‚СЊСЃСЏ)',
 					'height' => '4'),
 				array ('type' => 'divider'),
 				array ('type' => 'checkbox', 'name' => 'flushShowCount',
-					'label' => 'Обнулить кол-во показов'),
+					'label' => 'РћР±РЅСѓР»РёС‚СЊ РєРѕР»-РІРѕ РїРѕРєР°Р·РѕРІ'),
 			),
 			'buttons' => array('ok', 'apply', 'cancel'),
 		);
@@ -502,7 +500,7 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Возвращает разметку списка баннеров
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµС‚РєСѓ СЃРїРёСЃРєР° Р±Р°РЅРЅРµСЂРѕРІ
 	 *
 	 * @return string  HTML
 	 */
@@ -537,10 +535,10 @@ class Banners extends Plugin
 		{
 			case 'create':
 				$result = $this->create();
-			break;
+				break;
 			case 'insert':
 				$result = $this->insert();
-			break;
+				break;
 		}
 		else
 		{
@@ -566,27 +564,27 @@ class Banners extends Plugin
 		{
 			case !is_null(arg('update')):
 				$result = $this->update();
-			break;
+				break;
 			case !is_null(arg('toggle')):
 				$result = $this->toggle(arg('toggle', 'dbsafe'));
-			break;
+				break;
 			case !is_null(arg('delete')):
 				$result = $this->delete(arg('delete', 'dbsafe'));
-			break;
+				break;
 			case !is_null(arg('id')):
 				$result = $this->adminEditItem();
-			break;
+				break;
 			case !is_null(arg('action')):
 				switch (arg('action'))
 				{
 					case 'create':
 						$result = $this->adminAddItem();
-					break;
+						break;
 					case 'insert':
 						$result = $this->insert();
-					break;
+						break;
 				}
-			break;
+				break;
 			default:
 				if (!is_null(arg('section')))
 				{
@@ -612,10 +610,10 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Отрисовка баннеров и обработка кликов
+	 * РћС‚СЂРёСЃРѕРІРєР° Р±Р°РЅРЅРµСЂРѕРІ Рё РѕР±СЂР°Р±РѕС‚РєР° РєР»РёРєРѕРІ
 	 *
-	 * @param string $text  HTML страницы
-	 * @return string  HTML страницы
+	 * @param string $text  HTML СЃС‚СЂР°РЅРёС†С‹
+	 * @return string  HTML СЃС‚СЂР°РЅРёС†С‹
 	 */
 	public function clientOnPageRender($text)
 	{
@@ -624,7 +622,7 @@ class Banners extends Plugin
 		if (arg('banners-click'))
 		{
 			/*
-			 * Если передан аргумент banners-click, надо перенаправить польщователя на URL баннера
+			 * Р•СЃР»Рё РїРµСЂРµРґР°РЅ Р°СЂРіСѓРјРµРЅС‚ banners-click, РЅР°РґРѕ РїРµСЂРµРЅР°РїСЂР°РІРёС‚СЊ РїРѕР»СЊС‰РѕРІР°С‚РµР»СЏ РЅР° URL Р±Р°РЅРЅРµСЂР°
 			 */
 			if (count($Eresus->request['arg']) != 1)
 			{
@@ -642,7 +640,7 @@ class Banners extends Plugin
 		}
 		else
 		{
-			// Ищем все места встаки баннеров
+			// РС‰РµРј РІСЃРµ РјРµСЃС‚Р° РІСЃС‚Р°РєРё Р±Р°РЅРЅРµСЂРѕРІ
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks,
 				PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
@@ -655,11 +653,11 @@ class Banners extends Plugin
 					"(`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
 					gettime() . "')";
 
-				// Получаем баннеры для этого блока в порядке уменьшения приоритета
+				// РџРѕР»СѓС‡Р°РµРј Р±Р°РЅРЅРµСЂС‹ РґР»СЏ СЌС‚РѕРіРѕ Р±Р»РѕРєР° РІ РїРѕСЂСЏРґРєРµ СѓРјРµРЅСЊС€РµРЅРёСЏ РїСЂРёРѕСЂРёС‚РµС‚Р°
 				$items = $this->dbSelect('', $sql, '-priority');
 				if (count($items))
 				{
-					/* Отсекаем баннеры с низким приоритетом */
+					/* РћС‚СЃРµРєР°РµРј Р±Р°РЅРЅРµСЂС‹ СЃ РЅРёР·РєРёРј РїСЂРёРѕСЂРёС‚РµС‚РѕРј */
 					$priority = $items[0]['priority'];
 					for ($i = 0; $i < count($items); $i++)
 					{
@@ -670,7 +668,7 @@ class Banners extends Plugin
 						}
 					}
 
-					// Выбираем случайный баннер
+					// Р’С‹Р±РёСЂР°РµРј СЃР»СѓС‡Р°Р№РЅС‹Р№ Р±Р°РЅРЅРµСЂ
 					$item = $items[mt_rand(0, count($items)-1)];
 					$item['shows']++;
 					$banner = BannersFactory::createFromArray($item);
@@ -685,19 +683,19 @@ class Banners extends Plugin
 			}
 			$items = $Eresus->db->select($this->table['name'],
 				"(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" . gettime() .
-				"') AND (`showTill` != '0000-00-00'))");
+					"') AND (`showTill` != '0000-00-00'))");
 			if (count($items))
 			{
 				foreach ($items as $item)
 				{
-					/* sendMail($item['mail'], 'Ваш баннер деактивирован', 'Ваш баннер "'.$item['caption'].
-					 ' был отключен, т.к. так как превышены количество показов либо дата показа."'); */
-					sendMail(option('sendNotifyTo'), 'Баннер деактивирован', 'Баннер "' .
-						$item['caption'] . ' был отключен системой управления сайтом."');
+					/* sendMail($item['mail'], 'Р’Р°С€ Р±Р°РЅРЅРµСЂ РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ', 'Р’Р°С€ Р±Р°РЅРЅРµСЂ "'.$item['caption'].
+					 ' Р±С‹Р» РѕС‚РєР»СЋС‡РµРЅ, С‚.Рє. С‚Р°Рє РєР°Рє РїСЂРµРІС‹С€РµРЅС‹ РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕРєР°Р·РѕРІ Р»РёР±Рѕ РґР°С‚Р° РїРѕРєР°Р·Р°."'); */
+					sendMail(option('sendNotifyTo'), 'Р‘Р°РЅРЅРµСЂ РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ', 'Р‘Р°РЅРЅРµСЂ "' .
+						$item['caption'] . ' Р±С‹Р» РѕС‚РєР»СЋС‡РµРЅ СЃРёСЃС‚РµРјРѕР№ СѓРїСЂР°РІР»РµРЅРёСЏ СЃР°Р№С‚РѕРј."');
 				}
 				$Eresus->db->update($this->table['name'],
 					"`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" .
-					gettime() . "') AND (`showTill` != '0000-00-00'))");
+						gettime() . "') AND (`showTill` != '0000-00-00'))");
 			}
 		}
 		return $text;
@@ -705,9 +703,9 @@ class Banners extends Plugin
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Перенаправляет посетителя на URL, заданный баннером
+	 * РџРµСЂРµРЅР°РїСЂР°РІР»СЏРµС‚ РїРѕСЃРµС‚РёС‚РµР»СЏ РЅР° URL, Р·Р°РґР°РЅРЅС‹Р№ Р±Р°РЅРЅРµСЂРѕРј
 	 *
-	 * @param int $id  Идентификатор баннера
+	 * @param int $id  РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р±Р°РЅРЅРµСЂР°
 	 */
 	private function processClick($id)
 	{
@@ -748,21 +746,21 @@ class Banners extends Plugin
 
 
 /**
- * Баннер
+ * Р‘Р°РЅРЅРµСЂ
  *
  * @package Banners
  */
 abstract class AbstractBanner
 {
 	/**
-	 * Свойства баннера
+	 * РЎРІРѕР№СЃС‚РІР° Р±Р°РЅРЅРµСЂР°
 	 *
 	 * @var array
 	 */
 	protected $data;
 
 	/**
-	 * Конструктор баннера
+	 * РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Р±Р°РЅРЅРµСЂР°
 	 *
 	 * @param array $data
 	 * @return AbstractBanner
@@ -774,7 +772,7 @@ abstract class AbstractBanner
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Метод должен возвращать разметку баннера для добавления на страницу
+	 * РњРµС‚РѕРґ РґРѕР»Р¶РµРЅ РІРѕР·РІСЂР°С‰Р°С‚СЊ СЂР°Р·РјРµС‚РєСѓ Р±Р°РЅРЅРµСЂР° РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РЅР° СЃС‚СЂР°РЅРёС†Сѓ
 	 *
 	 * @return string  HTML
 	 */
@@ -782,7 +780,7 @@ abstract class AbstractBanner
 	//-----------------------------------------------------------------------------
 
 	/**
-	 * Возвращает объект плагина Banners
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕР±СЉРµРєС‚ РїР»Р°РіРёРЅР° Banners
 	 *
 	 * @return Banners
 	 */
@@ -797,14 +795,14 @@ abstract class AbstractBanner
 
 
 /**
- * Текстовый баннер
+ * РўРµРєСЃС‚РѕРІС‹Р№ Р±Р°РЅРЅРµСЂ
  *
  * @package Banners
  */
 class TextBanner extends AbstractBanner
 {
 	/**
-	 * Возвращает кода баннера для вставки на страницу
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРґР° Р±Р°РЅРЅРµСЂР° РґР»СЏ РІСЃС‚Р°РІРєРё РЅР° СЃС‚СЂР°РЅРёС†Сѓ
 	 *
 	 * @return string  HTML
 	 * @see AbstractBanner::render()
@@ -819,14 +817,14 @@ class TextBanner extends AbstractBanner
 
 
 /**
- * Графический баннер
+ * Р“СЂР°С„РёС‡РµСЃРєРёР№ Р±Р°РЅРЅРµСЂ
  *
  * @package Banners
  */
 class ImageBanner extends AbstractBanner
 {
 	/**
-	 * Возвращает кода баннера для вставки на страницу
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРґР° Р±Р°РЅРЅРµСЂР° РґР»СЏ РІСЃС‚Р°РІРєРё РЅР° СЃС‚СЂР°РЅРёС†Сѓ
 	 *
 	 * @return string  HTML
 	 * @see AbstractBanner::render()
@@ -857,14 +855,14 @@ class ImageBanner extends AbstractBanner
 
 
 /**
- * Flash-баннер
+ * Flash-Р±Р°РЅРЅРµСЂ
  *
  * @package Banners
  */
 class FlashBanner extends AbstractBanner
 {
 	/**
-	 * Возвращает кода баннера для вставки на страницу
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРґР° Р±Р°РЅРЅРµСЂР° РґР»СЏ РІСЃС‚Р°РІРєРё РЅР° СЃС‚СЂР°РЅРёС†Сѓ
 	 *
 	 * @return string  HTML
 	 * @see AbstractBanner::render()
@@ -880,7 +878,7 @@ class FlashBanner extends AbstractBanner
 				'<param name="movie" value="%1$s" />' .
 				'<param name="quality" value="high" />' .
 				'<param name="wmode" value="opaque" />' .
-			'</object>';
+				'</object>';
 
 		$swf = $plugin->getDataURL() . $this->data['image'];
 		$width = $this->data['width'];
@@ -895,10 +893,10 @@ class FlashBanner extends AbstractBanner
 			$template =
 				'<div class="banners-swf-container">' .
 					'<div class="banners-swf-overlay">' .
-						'<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
+					'<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
 					'</div>' .
 					'%3$s' .
-				'</div>';
+					'</div>';
 
 			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
 			$target = $this->data['target'] ? '' : ' target="_blank"';
@@ -915,19 +913,19 @@ class FlashBanner extends AbstractBanner
 
 
 /**
- * Фабрика баннеров
+ * Р¤Р°Р±СЂРёРєР° Р±Р°РЅРЅРµСЂРѕРІ
  *
- * Класс предназначен для создания объектов баннеров
+ * РљР»Р°СЃСЃ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РѕР±СЉРµРєС‚РѕРІ Р±Р°РЅРЅРµСЂРѕРІ
  *
  * @package Banners
  */
 class BannersFactory
 {
 	/**
-	 * Создаёт объект баннера из массива его свойств
+	 * РЎРѕР·РґР°С‘С‚ РѕР±СЉРµРєС‚ Р±Р°РЅРЅРµСЂР° РёР· РјР°СЃСЃРёРІР° РµРіРѕ СЃРІРѕР№СЃС‚РІ
 	 *
 	 * @param array $data
-	 * @return Banner  Объект баннера
+	 * @return Banner  РћР±СЉРµРєС‚ Р±Р°РЅРЅРµСЂР°
 	 */
 	public static function createFromArray($data)
 	{
