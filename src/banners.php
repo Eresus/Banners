@@ -130,7 +130,7 @@ class Banners extends Plugin
 			KEY `showTill` (`showTill`),
 			KEY `showCount` (`showCount`),
 			KEY `shows` (`shows`)
-		) TYPE=MyISAM COMMENT='Banner system';",
+		);",
 	);
 
 	/**
@@ -677,11 +677,8 @@ class Banners extends Plugin
 						"`id`='".$item['id']."'");
 
 					$code = $banner->render();
-					$start = $block[0][1] + $delta;
-					$length = mb_strlen($block[0][0]);
-					$text = mb_substr($text, 0, $start) . $code . mb_substr($text, $start + $length);
-
-					$delta += mb_strlen($code) - $length;
+					$text = substr_replace($text, $code, $block[0][1] + $delta, strlen($block[0][0]));
+					$delta += strlen($code) - strlen($block[0][0]);
 				}
 			}
 			$items = $Eresus->db->select($this->table['name'],
