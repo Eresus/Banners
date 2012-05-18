@@ -2,7 +2,7 @@
 <!--
  Сборочный файл для Banners
 
- $Id: build.xml 2172 2012-05-17 18:40:30Z mk $
+ $Id$
  -->
 
 <project name="banners" default="build" basedir="./">
