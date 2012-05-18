@@ -2,10 +2,9 @@
 /**
  * Система показа баннеров
  *
- * @version: 3.00
+ * @version: ${product.version}
  *
- * @copyright 2005, ProCreat Systems, http://procreat.ru/
- * @copyright 2007, Eresus Group, http://eresus.ru/
+ * @copyright 2005, Михаил Красильников <mihalych@vsepofigu.ru>
  * @license http://www.gnu.org/licenses/gpl.txt  GPL License 3
  * @author Михаил Красильников <mihalych@vsepofigu.ru>
  * @author БерсЪ <bersz@procreat.ru>
@@ -62,7 +61,7 @@ class Banners extends Plugin
 	 * Версия
 	 * @var string
 	 */
-	public $version = '3.00a';
+	public $version = '${product.version}';
 
 	/**
 	 * Описание
