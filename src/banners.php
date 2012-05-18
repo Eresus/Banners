@@ -662,7 +662,7 @@ class Banners extends Plugin
 					{
 						if ($banners[$i]->getPriority() != $priority)
 						{
-							$items = array_slice($banners, 0, $i);
+							$banners = array_slice($banners, 0, $i);
 							break;
 						}
 					}
