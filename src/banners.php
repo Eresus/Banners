@@ -678,8 +678,8 @@ class Banners extends Plugin
 				}
 			}
 			$items = $Eresus->db->select($this->table['name'],
-				"(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" . gettime() .
-					"') AND (`showTill` != '0000-00-00'))");
+				"`active` = 1 AND (`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" .
+					gettime() . "') AND (`showTill` != '0000-00-00'))");
 			if (count($items))
 			{
 				foreach ($items as $item)
@@ -718,13 +718,14 @@ class Banners extends Plugin
 	 */
 	private function processClick($id)
 	{
-		$item = $this->dbItem('', $id);
-		if ($item)
+		$repo = Banners_Repository::getInstance();
+		$banner = $repo->find($id);
+		if ($banner)
 		{
-			$item['clicks']++;
-			$this->dbUpdate('', $item);
+			$banner->incClicks();
+			$repo->save($banner);
 
-			$url = $GLOBALS['page']->replaceMacros($item['url']);
+			$url = $GLOBALS['page']->replaceMacros($banner->getURL());
 
 			if ($url == '#')
 			{
