@@ -640,41 +640,37 @@ class Banners extends Plugin
 		}
 		else
 		{
-			// Ищем все места встаки баннеров
+			$repo = Banners_Repository::getInstance();
+			// Ищем все места вставки баннеров
 			preg_match_all('/\$\(Banners:([^)]+)\)/', $text, $blocks,
 				PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
 			$delta = 0;
 			foreach ($blocks as $block)
 			{
-				$sql = "(`active`=1) AND (`section` LIKE '%|" . $page->id .
-					"|%' OR `section` LIKE '%|all|%') AND (`block`='" . $block[1][0 ] .
-					"') AND (`showFrom`<='" . gettime() .
-					"') AND (`showCount`=0 OR (`shows` < `showCount`) OR `shows` IS NULL) AND " .
-					"(`showTill` = '0000-00-00' OR `showTill` IS NULL OR `showTill` > '" .
-					gettime() . "')";
-
 				// Получаем баннеры для этого блока в порядке уменьшения приоритета
-				$items = $this->dbSelect('', $sql, '-priority');
-				if (count($items))
+				$query = $repo->getQuery()->
+					activeOnly()->
+					forSection($page->id)->
+					forBlock($block[1][0 ])->
+					orderBy('priority', ezcQuerySelect::DESC);
+				$banners = $query->fetchAll();
+				if (count($banners))
 				{
 					/* Отсекаем баннеры с низким приоритетом */
-					$priority = $items[0]['priority'];
-					for ($i = 0; $i < count($items); $i++)
+					$priority = $banners[0]->getPriority();
+					for ($i = 0; $i < count($banners); $i++)
 					{
-						if ($items[$i]['priority'] != $priority)
+						if ($banners[$i]->getPriority() != $priority)
 						{
-							$items = array_slice($items, 0, $i);
+							$items = array_slice($banners, 0, $i);
 							break;
 						}
 					}
 
 					// Выбираем случайный баннер
-					$item = $items[mt_rand(0, count($items)-1)];
-					$item['shows']++;
-					$banner = Banners_Factory::createFromArray($item);
-
-					$Eresus->db->updateItem($this->name, $Eresus->db->escape($item),
-						"`id`='".$item['id']."'");
+					$banner = $banners[mt_rand(0, count($banners)-1)];
+					$banner->incShows();
+					$repo->save($banner);
 
 					$code = $banner->render();
 					$text = substr_replace($text, $code, $block[0][1] + $delta, strlen($block[0][0]));
@@ -699,6 +695,19 @@ class Banners extends Plugin
 			}
 		}
 		return $text;
+	}
+	//-----------------------------------------------------------------------------
+
+	/**
+	 * Возвращает объект хранилища баннеров
+	 *
+	 * @return Banners_Repository
+	 *
+	 * @since 3.00
+	 */
+	public function getRepository()
+	{
+		return Banners_Repository::getInstance();
 	}
 	//-----------------------------------------------------------------------------
 
