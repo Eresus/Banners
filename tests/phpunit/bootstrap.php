@@ -1,15 +1,13 @@
 <?php
 /**
- * [Краткое название плагина]
- *
+/**
  * Модульные тесты
  *
  * @version ${product.version}
  *
- * @copyright [год], [владелец], [адрес, если нужен]
+ * @copyright 2012, Михаил Красильников <mihalych@vsepofigu.ru>
  * @license http://www.gnu.org/licenses/gpl.txt	GPL License 3
- * @author [Автор1 <E-mail автора1>]
- * @author [АвторN <E-mail автораN>]
+ * @author Михаил Красильников <mihalych@vsepofigu.ru>
  *
  * Данная программа является свободным программным обеспечением. Вы
  * вправе распространять ее и/или модифицировать в соответствии с
@@ -27,10 +25,8 @@
  * GNU с этой программой. Если Вы ее не получили, смотрите документ на
  * <http://www.gnu.org/licenses/>
  *
- * @package [Имя пакета]
+ * @package Banners
  * @subpackage Tests
- *
- * $Id$
  */
 
 define('TESTS_SRC_DIR', realpath(__DIR__ . '/../../src'));
@@ -38,7 +34,7 @@ define('TESTS_SRC_DIR', realpath(__DIR__ . '/../../src'));
 /**
  * Универсальная заглушка
  *
- * @package [Имя пакета]
+ * @package Banners
  * @subpackage Tests
  */
 class UniversalStub implements ArrayAccess

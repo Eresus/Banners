@@ -26,8 +26,6 @@
  *
  * @package Banners
  * @subpackage Tests
- *
- * $Id$
  */
 
 

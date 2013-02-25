@@ -23,8 +23,6 @@
  * <http://www.gnu.org/licenses/>
  *
  * @package Banners
- *
- * $Id$
  */
 
 /**
