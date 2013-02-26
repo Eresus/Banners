@@ -16,7 +16,6 @@
 	<!-- Все исходные файлы -->
 	<fileset dir="src" id="files.sources">
 		<include name="**" />
-		<exclude name=".svn" />
 	</fileset>
 
 		<!-- Исходные файлы PHP -->
@@ -87,6 +86,7 @@
 		</if>
 
 		<phpcodesniffer
+			encoding="UTF-8"
 			standard="Eresus"
 			haltonerror="false"
 		>
@@ -141,20 +141,13 @@
 	-->
 	<target name="docs" description="Generate documentation">
 
-		<delete dir="${docs.dir}" includeemptydirs="true" failonerror="true" />
+		<delete dir="${docs.dir}" includeemptydirs="true" />
+		<mkdir dir="${docs.dir}" />
 
-		<phpdoc title="Banners ${product.version} API"
-			destdir="${docs.dir}"
-			sourcecode="false"
-			parseprivate="false"
-			output="${docs.converter}">
+		<phpdoc2 title="Banners ${product.version} API"
+			destdir="${docs.dir}">
 			<fileset refid="files.sources" />
-			<projdocfileset dir=".">
-				<include name="README" />
-				<include name="INSTALL" />
-				<include name="CHANGELOG" />
-			</projdocfileset>
-		</phpdoc>
+		</phpdoc2>
 
 	</target>
 
