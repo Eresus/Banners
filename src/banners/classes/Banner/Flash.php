@@ -33,50 +33,51 @@
  */
 class Banners_Banner_Flash extends Banners_Banner_Abstract
 {
-	/**
-	 * Возвращает кода баннера для вставки на страницу
-	 *
-	 * @return string  HTML
-	 * @see AbstractBanner::render()
-	 */
-	public function render()
-	{
-		global $Eresus, $page;
+    /**
+     * Возвращает кода баннера для вставки на страницу
+     *
+     * @return string  HTML
+     * @see AbstractBanner::render()
+     */
+    public function render()
+    {
+        global $Eresus, $page;
 
-		$plugin = $this->getPlugin();
+        $plugin = $this->getPlugin();
 
-		$template =
-			'<object type="application/x-shockwave-flash" data="%s" width="%d" height="%d">' .
-				'<param name="movie" value="%1$s" />' .
-				'<param name="quality" value="high" />' .
-				'<param name="wmode" value="opaque" />' .
-				'</object>';
+        $template =
+            '<object type="application/x-shockwave-flash" data="%s" width="%d" height="%d">' .
+                '<param name="movie" value="%1$s" />' .
+                '<param name="quality" value="high" />' .
+                '<param name="wmode" value="opaque" />' .
+                '</object>';
 
-		$swf = $plugin->getDataURL() . $this->data['image'];
-		$width = $this->data['width'];
-		$height = $this->data['height'];
+        $swf = $plugin->getDataURL() . $this->data['image'];
+        $width = $this->data['width'];
+        $height = $this->data['height'];
 
-		$html = sprintf($template, $swf, $width, $height);
+        $html = sprintf($template, $swf, $width, $height);
 
-		if (!empty($this->data['url']))
-		{
-			$page->linkStyles($plugin->getCodeURL() . 'main.css');
+        if (!empty($this->data['url']))
+        {
+            $page->linkStyles($plugin->getCodeURL() . 'main.css');
 
-			$template =
-				'<div class="banners-swf-container">' .
-					'<div class="banners-swf-overlay">' .
-					'<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
-					'</div>' .
-					'%3$s' .
-					'</div>';
+            $template =
+                '<div class="banners-swf-container">' .
+                    '<div class="banners-swf-overlay">' .
+                    '<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
+                    '</div>' .
+                    '%3$s' .
+                    '</div>';
 
-			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
-			$target = $this->data['target'] ? '' : ' target="_blank"';
-			$stubImage = $Eresus->root . 'style/dot.gif';
+            $url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+            $target = $this->data['target'] ? '' : ' target="_blank"';
+            $stubImage = $Eresus->root . 'style/dot.gif';
 
-			$html = sprintf($template, $url, $target, $html, $stubImage, $width, $height);
-		}
+            $html = sprintf($template, $url, $target, $html, $stubImage, $width, $height);
+        }
 
-		return $html;
-	}
+        return $html;
+    }
 }
+
