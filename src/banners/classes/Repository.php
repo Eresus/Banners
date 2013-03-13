@@ -168,7 +168,7 @@ class Banners_Repository
      */
     protected function getPlugin()
     {
-        return $GLOBALS['Eresus']->plugins->load('banners');
+        return Eresus_CMS::getLegacyKernel()->plugins->load('banners');
     }
 }
 

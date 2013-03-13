@@ -247,7 +247,6 @@ class Banners extends Plugin
      */
     private function update()
     {
-        global $request;
         $Eresus = Eresus_CMS::getLegacyKernel();
 
         $item = $Eresus->db->selectItem($this->table['name'], "`id`='". arg('update')."'");
@@ -710,12 +709,14 @@ class Banners extends Plugin
     {
         $repo = Banners_Repository::getInstance();
         $banner = $repo->find($id);
+        /** @var TClientUI $page */
+        $page = Eresus_Kernel::app()->getPage();
         if ($banner)
         {
             $banner->incClicks();
             $repo->save($banner);
 
-            $url = $GLOBALS['page']->replaceMacros($banner->getURL());
+            $url = $page->replaceMacros($banner->getURL());
 
             if ($url == '#')
             {
@@ -728,16 +729,21 @@ class Banners extends Plugin
         }
         else
         {
-            $GLOBALS['page']->httpError(404);
+            $page->httpError(404);
         }
     }
 
+    /**
+     * Создаёт таблицу в БД
+     *
+     * @param array $table
+     *
+     * @return void
+     */
     protected function createTable($table)
     {
-        global $Eresus;
-
-        $Eresus->db->query('CREATE TABLE IF NOT EXISTS `' . $Eresus->db->prefix . $table['name'] .
-            '`'.$table['sql']);
+        $db = Eresus_CMS::getLegacyKernel()->db;
+        $db->query("CREATE TABLE IF NOT EXISTS `{$db->prefix}{$table['name']}` {$table['sql']}");
     }
 }
 

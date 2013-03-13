@@ -30,6 +30,8 @@
  *
  * Класс предназначен для формирования запроса на получение баннеров из БД
  *
+ * @method bindValue
+ *
  * @package Banners
  *
  * @since 3.00
@@ -69,7 +71,9 @@ class Banners_Query
     public function __construct(Banners_Repository $repo)
     {
         $this->repo = $repo;
-        $this->query = DB::createSelectQuery()->select('*')->from('banners');
+        $this->query = DB::createSelectQuery();
+        $this->query->select('*');
+        $this->query->from('banners');
     }
 
     /**

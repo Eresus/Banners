@@ -40,8 +40,6 @@ class Banners_Banner_Image extends Banners_Banner_Abstract
      */
     public function render()
     {
-        global $Eresus;
-
         $plugin = $this->getPlugin();
 
         $html = img($plugin->getDataDir() . $this->data['image']);
@@ -50,7 +48,8 @@ class Banners_Banner_Image extends Banners_Banner_Abstract
         {
             $template = '<a href="%s"%s>%s</a>';
 
-            $url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+            $url = Eresus_CMS::getLegacyKernel()->request['path'] . '?banners-click='
+                .	$this->data['id'];
             $target = $this->data['target'] ? '' : ' target="_blank"';
 
             $html = sprintf($template, $url, $target, $html);
