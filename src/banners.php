@@ -41,7 +41,7 @@ class Banners extends Plugin
 	 * Требуемая версия ядра
 	 * @var string
 	 */
-	public $kernel = '3.00b';
+	public $kernel = '3.00a';
 
 	/**
 	 * Название плагина
@@ -135,12 +135,11 @@ class Banners extends Plugin
 	 *
 	 * Производит регистрацию обработчиков событий.
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->listenEvents('clientOnPageRender', 'adminOnMenuRender');
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Возвращает путь к директории данных плагина
@@ -153,7 +152,6 @@ class Banners extends Plugin
 	{
 		return $this->dirData;
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Действия при установке плагина
@@ -166,21 +164,19 @@ class Banners extends Plugin
 
 		$this->mkdir();
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Возвращает ветку разделов сайта
 	 *
-	 * @param int $owner[optional]
-	 * @param int $level[optional]
+	 * @param int $owner
+	 * @param int $level
+	 *
 	 * @return array
 	 */
 	private function menuBranch($owner = 0, $level = 0)
 	{
-		global $Eresus;
-
 		$result = array(array(), array());
-		$items = $Eresus->db->select('pages',
+		$items = Eresus_CMS::getLegacyKernel()->db->select('pages',
 			"(`access` >= '" . USER . "') AND (`owner` = '" . $owner . "') AND (`active` = '1')",
 			"-position", "`id`,`caption`");
 		if (count($items))
@@ -199,7 +195,6 @@ class Banners extends Plugin
 		}
 		return $result;
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Добавляет баннер в БД
@@ -208,7 +203,7 @@ class Banners extends Plugin
 	 */
 	private function insert()
 	{
-		global $Eresus, $request;
+		$Eresus = Eresus_CMS::getLegacyKernel();
 
 		$item = array();
 		$item['caption'] = arg('caption', 'dbsafe');
@@ -239,13 +234,12 @@ class Banners extends Plugin
 		{
 			$filename = 'banner' . $item['id'] . substr($_FILES['image']['name'],
 				strrpos($_FILES['image']['name'], '.'));
-			upload('image', filesRoot . 'data/' . $this->name . '/' . $filename);
+			upload('image', $Eresus->fdata . $this->name . '/' . $filename);
 			$item['image'] = $filename;
 			$Eresus->db->updateItem($this->table['name'], $item, "`id`='" . $item['id']."'");
 		}
-		HTTP::redirect($request['arg']['submitURL']);
+		HTTP::redirect(arg('submitURL'));
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Обновляет баннер в БД
@@ -253,9 +247,10 @@ class Banners extends Plugin
 	 */
 	private function update()
 	{
-		global $Eresus, $request;
+		global $request;
+		$Eresus = Eresus_CMS::getLegacyKernel();
 
-		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['update']."'");
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='". arg('update')."'");
 		$old_file = $item['image'];
 		$item['caption'] = arg('caption', 'dbsafe');
 		$item['active'] = arg('active', 'int');
@@ -285,7 +280,7 @@ class Banners extends Plugin
 		}
 		if (is_uploaded_file($_FILES['image']['tmp_name']))
 		{
-			$path = filesRoot.'data/'.$this->name.'/';
+			$path = $Eresus->fdata . $this->name.'/';
 			if (is_file($path.$old_file))
 			{
 				unlink($path.$old_file);
@@ -301,13 +296,12 @@ class Banners extends Plugin
 		if ($item['showTill'] == '')
 		{
 			$Eresus->db->query(
-				"UPDATE ".$Eresus->db->options->tableNamePrefix.$this->table['name'].
+				"UPDATE ".$Eresus->db->prefix . $this->table['name'].
 					" SET `showTill` = NULL WHERE `id`='".$item['id']."'");
 		}
 
-		HTTP::redirect($request['arg']['submitURL']);
+		HTTP::redirect(arg('submitURL'));
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Переключает активность баннера
@@ -317,7 +311,7 @@ class Banners extends Plugin
 	 */
 	private function toggle($id)
 	{
-		global $Eresus, $page;
+		$Eresus = Eresus_CMS::getLegacyKernel();
 
 		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
 		$item['active'] = !$item['active'];
@@ -325,9 +319,8 @@ class Banners extends Plugin
 		$item = $Eresus->db->escape($item);
 		$Eresus->db->updateItem($this->table['name'], $item, "`id`='".$id."'");
 
-		HTTP::redirect($page->url());
+		HTTP::redirect(Eresus_Kernel::app()->getPage()->url());
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Удаляет баннер
@@ -337,10 +330,10 @@ class Banners extends Plugin
 	 */
 	private function delete($id)
 	{
-		global $page, $Eresus;
+		$Eresus = Eresus_CMS::getLegacyKernel();
 
 		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
-		$path = dataFiles.$this->name.'/';
+		$path = $Eresus->fdata . $this->name.'/';
 		if (
 			!empty($item['image']) &&
 			file_exists($path.$item['image'])
@@ -350,20 +343,16 @@ class Banners extends Plugin
 		}
 		$item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."`='".$id."'");
 		$Eresus->db->delete($this->table['name'], "`".$this->table['key']."`='".$id."'");
-		HTTP::redirect(str_replace('&amp;', '&', $page->url()));
+		HTTP::redirect(str_replace('&amp;', '&', Eresus_Kernel::app()->getPage()->url()));
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Возвращает диалог добавления баннера
 	 *
 	 * @return string  HTML
 	 */
-	function create()
+	private function create()
 	{
-		global $page;
-
-		$sections = array(array(), array());
 		$sections = $this->menuBranch();
 		array_unshift($sections[0], 'ВСЕ РАЗДЕЛЫ');
 		array_unshift($sections[1], 'all');
@@ -419,23 +408,22 @@ class Banners extends Plugin
 			'buttons' => array('ok', 'cancel'),
 		);
 
+		/** @var TAdminUI $page */
+		$page = Eresus_Kernel::app()->getPage();
 		$result = $page->renderForm($form);
 		return $result;
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Возвращает диалог изменения баннера
 	 *
-	 * @return string  HMTL
+	 * @return string  HTML
 	 */
-	function edit()
+	private function edit()
 	{
-		global $page, $Eresus, $request;
-
-		$item = $Eresus->db->selectItem($this->table['name'], "`id`='".$request['arg']['id']."'");
+		$Eresus = Eresus_CMS::getLegacyKernel();
+		$item = $Eresus->db->selectItem($this->table['name'], "`id`='" . arg ('id') . "'");
 		$item['section'] = explode('|', $item['section']);
-		$sections = array(array(), array());
 		$sections = $this->menuBranch();
 		array_unshift($sections[0], 'ВСЕ РАЗДЕЛЫ');
 		array_unshift($sections[1], 'all');
@@ -493,20 +481,23 @@ class Banners extends Plugin
 			'buttons' => array('ok', 'apply', 'cancel'),
 		);
 
+		/** @var TAdminUI $page */
+		$page = Eresus_Kernel::app()->getPage();
 		$result = $page->renderForm($form, $item);
 		return $result;
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Возвращает разметку списка баннеров
 	 *
 	 * @return string  HTML
 	 */
-	function adminRender()
+	public function adminRender()
 	{
-		global $Eresus, $page, $request;
-
+		$Eresus = Eresus_CMS::getLegacyKernel();
+		$request = $Eresus->request;
+		/** @var TAdminUI $page */
+		$page = Eresus_Kernel::app()->getPage();
 		$result = '';
 		if (isset($request['arg']['id']))
 		{
@@ -516,15 +507,15 @@ class Banners extends Plugin
 		}
 		if (isset($request['arg']['update']) && isset($this->table['controls']['edit']))
 		{
-			$result = $this->update();
+			$this->update();
 		}
 		elseif (isset($request['arg']['toggle']) && isset($this->table['controls']['toggle']))
 		{
-			$result = $this->toggle($request['arg']['toggle']);
+			$this->toggle($request['arg']['toggle']);
 		}
 		elseif (isset($request['arg']['delete']) && isset($this->table['controls']['delete']))
 		{
-			$result = $this->delete($request['arg']['delete']);
+			$this->delete($request['arg']['delete']);
 		}
 		elseif (isset($request['arg']['id']) && isset($this->table['controls']['edit']))
 		{
@@ -536,7 +527,7 @@ class Banners extends Plugin
 				$result = $this->create();
 				break;
 			case 'insert':
-				$result = $this->insert();
+				$this->insert();
 				break;
 		}
 		else
@@ -545,13 +536,15 @@ class Banners extends Plugin
 		}
 		return $result;
 	}
-	//-----------------------------------------------------------------------------
 
-
+	/**
+	 * @return string|void
+	 */
 	function adminRenderContent()
 	{
-		global $Eresus, $page;
-
+		$Eresus = Eresus_CMS::getLegacyKernel();
+		/** @var TAdminUI $page */
+		$page = Eresus_Kernel::app()->getPage();
 		$result = '';
 		if (!is_null(arg('id')))
 		{
@@ -562,25 +555,25 @@ class Banners extends Plugin
 		switch (true)
 		{
 			case !is_null(arg('update')):
-				$result = $this->update();
+				$this->update();
 				break;
 			case !is_null(arg('toggle')):
-				$result = $this->toggle(arg('toggle', 'dbsafe'));
+				$this->toggle(arg('toggle', 'dbsafe'));
 				break;
 			case !is_null(arg('delete')):
-				$result = $this->delete(arg('delete', 'dbsafe'));
+				$this->delete(arg('delete', 'dbsafe'));
 				break;
 			case !is_null(arg('id')):
-				$result = $this->adminEditItem();
+				$result = $this->edit();
 				break;
 			case !is_null(arg('action')):
 				switch (arg('action'))
 				{
 					case 'create':
-						$result = $this->adminAddItem();
+						$result = $this->create();
 						break;
 					case 'insert':
-						$result = $this->insert();
+						$this->insert();
 						break;
 				}
 				break;
@@ -593,20 +586,19 @@ class Banners extends Plugin
 		}
 		return $result;
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 *
-	 * @return unknown_type
+	 * @return void
 	 */
 	function adminOnMenuRender()
 	{
-		global $page;
+		/** @var TAdminUI $page */
+		$page = Eresus_Kernel::app()->getPage();
 
 		$page->addMenuItem(admExtensions, array('access' => EDITOR, 'link' => $this->name,
 			'caption'	=> $this->title, 'hint'	=> $this->description));
 	}
-	//-----------------------------------------------------------------------------
 
 	/**
 	 * Отрисовка баннеров и обработка кликов
@@ -616,8 +608,9 @@ class Banners extends Plugin
 	 */
 	public function clientOnPageRender($text)
 	{
-		global $Eresus, $page;
-
+		$Eresus = Eresus_CMS::getLegacyKernel();
+		/** @var TClientUI $page */
+		$page = Eresus_Kernel::app()->getPage();
 		if (arg('banners-click'))
 		{
 			/*
@@ -651,7 +644,7 @@ class Banners extends Plugin
 					activeOnly()->
 					forSection($page->id)->
 					forBlock($block[1][0 ])->
-					orderBy('priority', ezcQuerySelect::DESC);
+					orderBy('priority', ezcQuerySelect::DESC); // TODO!
 				$banners = $query->fetchAll();
 				if (count($banners))
 				{
