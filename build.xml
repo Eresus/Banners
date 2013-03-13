@@ -87,7 +87,7 @@
 
 		<phpcodesniffer
 			encoding="UTF-8"
-			standard="Eresus"
+			standard="PSR2DS"
 			haltonerror="false"
 		>
 			<formatter
