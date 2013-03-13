@@ -533,66 +533,20 @@ class Banners extends Plugin
     }
 
     /**
-     * @return string|void
-     */
-    public function adminRenderContent()
-    {
-        $Eresus = Eresus_CMS::getLegacyKernel();
-        /** @var TAdminUI $page */
-        $page = Eresus_Kernel::app()->getPage();
-        $result = '';
-        if (!is_null(arg('id')))
-        {
-            $item = $Eresus->db->selectItem($this->table['name'],
-                "`".$this->table['key']."` = '".arg('id', 'dbsafe')."'");
-            $page->title .= empty($item['caption'])?'':' - '.$item['caption'];
-        }
-        switch (true)
-        {
-            case !is_null(arg('update')):
-                $this->update();
-                break;
-            case !is_null(arg('toggle')):
-                $this->toggle(arg('toggle', 'dbsafe'));
-                break;
-            case !is_null(arg('delete')):
-                $this->delete(arg('delete', 'dbsafe'));
-                break;
-            case !is_null(arg('id')):
-                $result = $this->edit();
-                break;
-            case !is_null(arg('action')):
-                switch (arg('action'))
-                {
-                    case 'create':
-                        $result = $this->create();
-                        break;
-                    case 'insert':
-                        $this->insert();
-                        break;
-                }
-                break;
-            default:
-                if (!is_null(arg('section')))
-                {
-                    $this->table['condition'] = "`section`='".arg('section', 'int')."'";
-                }
-                $result = $page->renderTable($this->table);
-        }
-        return $result;
-    }
-
-    /**
      *
      * @return void
      */
-    function adminOnMenuRender()
+    public function adminOnMenuRender()
     {
         /** @var TAdminUI $page */
         $page = Eresus_Kernel::app()->getPage();
 
-        $page->addMenuItem(admExtensions, array('access' => EDITOR, 'link' => $this->name,
-            'caption'	=> $this->title, 'hint'	=> $this->description));
+        $page->addMenuItem(admExtensions, array(
+            'access' => EDITOR,
+            'link' => $this->name,
+            'caption' => $this->title,
+            'hint' => $this->description
+        ));
     }
 
     /**
