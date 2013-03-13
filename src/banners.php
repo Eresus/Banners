@@ -497,31 +497,25 @@ class Banners extends Plugin
         /** @var TAdminUI $page */
         $page = Eresus_Kernel::app()->getPage();
         $result = '';
-        if (isset($request['arg']['id']))
-        {
-            $item = $Eresus->db->selectItem($this->table['name'],
-                "`".$this->table['key']."` = '".$request['arg']['id']."'");
-            $page->title .= empty($item['caption'])?'':' - '.$item['caption'];
-        }
-        if (isset($request['arg']['update']))
+        if (arg('update'))
         {
             $this->update();
         }
-        elseif (isset($request['arg']['toggle']))
+        elseif (arg('toggle'))
         {
-            $this->toggle($request['arg']['toggle']);
+            $this->toggle(arg('toggle', 'int'));
         }
-        elseif (isset($request['arg']['delete']))
+        elseif (arg('delete'))
         {
-            $this->delete($request['arg']['delete']);
+            $this->delete(arg('delete', 'int'));
         }
-        elseif (isset($request['arg']['id']))
+        elseif (arg('id'))
         {
             $result = $this->edit();
         }
-        elseif (isset($request['arg']['action']))
+        elseif (arg('action'))
         {
-            switch ($request['arg']['action'])
+            switch (arg('action'))
             {
                 case 'create':
                     $result = $this->create();
@@ -541,7 +535,7 @@ class Banners extends Plugin
     /**
      * @return string|void
      */
-    function adminRenderContent()
+    public function adminRenderContent()
     {
         $Eresus = Eresus_CMS::getLegacyKernel();
         /** @var TAdminUI $page */
