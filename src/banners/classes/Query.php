@@ -30,7 +30,8 @@
  *
  * Класс предназначен для формирования запроса на получение баннеров из БД
  *
- * @method bindValue
+ * @method bindValue()
+ * @method orderBy()
  *
  * @package Banners
  *
@@ -178,7 +179,7 @@ class Banners_Query
     /**
      * Возвращает все баннеры, удовлетворяющие запросу
      *
-     * @return array
+     * @return Banners_Banner_Abstract[]
      */
     public function fetchAll()
     {
