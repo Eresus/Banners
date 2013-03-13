@@ -32,30 +32,31 @@
  */
 class Banners_Banner_Image extends Banners_Banner_Abstract
 {
-	/**
-	 * Возвращает кода баннера для вставки на страницу
-	 *
-	 * @return string  HTML
-	 * @see AbstractBanner::render()
-	 */
-	public function render()
-	{
-		global $Eresus;
+    /**
+     * Возвращает кода баннера для вставки на страницу
+     *
+     * @return string  HTML
+     * @see AbstractBanner::render()
+     */
+    public function render()
+    {
+        global $Eresus;
 
-		$plugin = $this->getPlugin();
+        $plugin = $this->getPlugin();
 
-		$html = img($plugin->getDataDir() . $this->data['image']);
+        $html = img($plugin->getDataDir() . $this->data['image']);
 
-		if (!empty($this->data['url']))
-		{
-			$template = '<a href="%s"%s>%s</a>';
+        if (!empty($this->data['url']))
+        {
+            $template = '<a href="%s"%s>%s</a>';
 
-			$url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
-			$target = $this->data['target'] ? '' : ' target="_blank"';
+            $url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+            $target = $this->data['target'] ? '' : ' target="_blank"';
 
-			$html = sprintf($template, $url, $target, $html);
-		}
+            $html = sprintf($template, $url, $target, $html);
+        }
 
-		return $html;
-	}
+        return $html;
+    }
 }
+
