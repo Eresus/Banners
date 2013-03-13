@@ -36,147 +36,139 @@
  */
 class Banners_Repository
 {
-	/**
-	 * Одиночка
-	 *
-	 * @var Banners_Repository
-	 * @since 3.00
-	 */
-	private static $instance = null;
+    /**
+     * Одиночка
+     *
+     * @var Banners_Repository
+     * @since 3.00
+     */
+    private static $instance = null;
 
-	/**
-	 * Реестр загруженных баннеров
-	 *
-	 * @var array
-	 */
-	private $registry = array();
+    /**
+     * Реестр загруженных баннеров
+     *
+     * @var array
+     */
+    private $registry = array();
 
-	/**
-	 * Возвращает экземпляр-одиночку
-	 *
-	 * @return Banners_Repository
-	 * @since 3.00
-	 */
-	public static function getInstance()
-	{
-		if (null === self::$instance)
-		{
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Возвращает экземпляр-одиночку
+     *
+     * @return Banners_Repository
+     * @since 3.00
+     */
+    public static function getInstance()
+    {
+        if (null === self::$instance)
+        {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
-	/**
-	 * Скрываем конструктор
-	 */
-	private function __construct()
-	{
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Скрываем конструктор
+     */
+    private function __construct()
+    {
+    }
 
-	/**
-	 * Запрещаем клонирование
-	 *
-	 * @throws LogicException
-	 */
-	public function __clone()
-	{
-		throw new LogicException('Class ' . __CLASS__ . ' and it\'s descendants can\'t be cloned.');
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Запрещаем клонирование
+     *
+     * @throws LogicException
+     */
+    public function __clone()
+    {
+        throw new LogicException('Class ' . __CLASS__ . ' and it\'s descendants can\'t be cloned.');
+    }
 
-	/**
-	 * Помещает объект в реестр
-	 *
-	 * @param Banners_Banner_Abstract $banner
-	 *
-	 * @return Banners_Banner_Abstract  если в реестре уже есть объект этого же баннера, возвратит
-	 *                                  уже существующий объект, иначе возвратит $banner
-	 */
-	public function registerObject(Banners_Banner_Abstract $banner)
-	{
-		if (isset($this->registry[$banner->getId()]))
-		{
-			return $this->registry[$banner->getId()];
-		}
+    /**
+     * Помещает объект в реестр
+     *
+     * @param Banners_Banner_Abstract $banner
+     *
+     * @return Banners_Banner_Abstract  если в реестре уже есть объект этого же баннера, возвратит
+     *                                  уже существующий объект, иначе возвратит $banner
+     */
+    public function registerObject(Banners_Banner_Abstract $banner)
+    {
+        if (isset($this->registry[$banner->getId()]))
+        {
+            return $this->registry[$banner->getId()];
+        }
 
-		$this->registry[$banner->getId()] = $banner;
-		return $banner;
-	}
-	//-----------------------------------------------------------------------------
+        $this->registry[$banner->getId()] = $banner;
+        return $banner;
+    }
 
-	/**
-	 * Возвращает баннер с указанным ID
-	 *
-	 * @param int $id
-	 *
-	 * @return Banners_Banner_Abstract|null
-	 */
-	public function find($id)
-	{
-		$query = $this->getQuery();
-		$query->where($query->expr->eq('id', $query->bindValue($id, null, PDO::PARAM_INT)));
-		$banner = $query->fetch();
+    /**
+     * Возвращает баннер с указанным ID
+     *
+     * @param int $id
+     *
+     * @return Banners_Banner_Abstract|null
+     */
+    public function find($id)
+    {
+        $query = $this->getQuery();
+        $query->where($query->expr->eq('id', $query->bindValue($id, null, PDO::PARAM_INT)));
+        $banner = $query->fetch();
 
-		return $banner;
-	}
-	//-----------------------------------------------------------------------------
+        return $banner;
+    }
 
-	/**
-	 * Возвращает объект для формирования запроса
-	 *
-	 * @return Banners_Query
-	 */
-	public function getQuery()
-	{
-		return new Banners_Query($this);
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Возвращает объект для формирования запроса
+     *
+     * @return Banners_Query
+     */
+    public function getQuery()
+    {
+        return new Banners_Query($this);
+    }
 
-	/**
-	 * Сохраняет изменения объекта в БД
-	 *
-	 * @param Banners_Banner_Abstract $banner
-	 *
-	 * @return void
-	 */
-	public function save(Banners_Banner_Abstract $banner)
-	{
-		$q = DB::createUpdateQuery();
-		$q->update('banners')->
-			set('caption', $q->bindValue($banner->getCaption(), null, PDO::PARAM_STR))->
-			set('active', $q->bindValue($banner->getActive(), null, PDO::PARAM_BOOL))->
-			set('section', $q->bindValue($banner->getSectionStr(), null, PDO::PARAM_STR))->
-			set('priority', $q->bindValue($banner->getPriority(), null, PDO::PARAM_INT))->
-			set('block', $q->bindValue($banner->getBlock(), null, PDO::PARAM_STR))->
-			set('showFrom', $q->bindValue($banner->getShowFrom(), null, PDO::PARAM_STR))->
-			set('showTill', $q->bindValue($banner->getShowTill(), null, PDO::PARAM_STR))->
-			set('showCount', $q->bindValue($banner->getShowCount(), null, PDO::PARAM_INT))->
-			set('html', $q->bindValue($banner->getHTML(), null, PDO::PARAM_STR))->
-			set('image', $q->bindValue($banner->getImage(), null, PDO::PARAM_STR))->
-			set('width', $q->bindValue($banner->getWidth(), null, PDO::PARAM_STR))->
-			set('height', $q->bindValue($banner->getHeight(), null, PDO::PARAM_STR))->
-			set('url', $q->bindValue($banner->getURL(), null, PDO::PARAM_STR))->
-			set('target', $q->bindValue($banner->getTargetIsBlank(), null, PDO::PARAM_BOOL))->
-			set('shows', $q->bindValue($banner->getShows(), null, PDO::PARAM_INT))->
-			set('clicks', $q->bindValue($banner->getClicks(), null, PDO::PARAM_INT))->
-			where($q->expr->eq('id', $q->bindValue($banner->getId(), null, PDO::PARAM_INT)));
-		DB::execute($q);
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Сохраняет изменения объекта в БД
+     *
+     * @param Banners_Banner_Abstract $banner
+     *
+     * @return void
+     */
+    public function save(Banners_Banner_Abstract $banner)
+    {
+        $q = DB::createUpdateQuery();
+        $q->update('banners')->
+            set('caption', $q->bindValue($banner->getCaption(), null, PDO::PARAM_STR))->
+            set('active', $q->bindValue($banner->getActive(), null, PDO::PARAM_BOOL))->
+            set('section', $q->bindValue($banner->getSectionStr(), null, PDO::PARAM_STR))->
+            set('priority', $q->bindValue($banner->getPriority(), null, PDO::PARAM_INT))->
+            set('block', $q->bindValue($banner->getBlock(), null, PDO::PARAM_STR))->
+            set('showFrom', $q->bindValue($banner->getShowFrom(), null, PDO::PARAM_STR))->
+            set('showTill', $q->bindValue($banner->getShowTill(), null, PDO::PARAM_STR))->
+            set('showCount', $q->bindValue($banner->getShowCount(), null, PDO::PARAM_INT))->
+            set('html', $q->bindValue($banner->getHTML(), null, PDO::PARAM_STR))->
+            set('image', $q->bindValue($banner->getImage(), null, PDO::PARAM_STR))->
+            set('width', $q->bindValue($banner->getWidth(), null, PDO::PARAM_STR))->
+            set('height', $q->bindValue($banner->getHeight(), null, PDO::PARAM_STR))->
+            set('url', $q->bindValue($banner->getURL(), null, PDO::PARAM_STR))->
+            set('target', $q->bindValue($banner->getTargetIsBlank(), null, PDO::PARAM_BOOL))->
+            set('shows', $q->bindValue($banner->getShows(), null, PDO::PARAM_INT))->
+            set('clicks', $q->bindValue($banner->getClicks(), null, PDO::PARAM_INT))->
+            where($q->expr->eq('id', $q->bindValue($banner->getId(), null, PDO::PARAM_INT)));
+        DB::execute($q);
+    }
 
-	/**
-	 * Возвращает объект плагина
-	 *
-	 * @return Banners
-	 *
-	 * @since 3.00
-	 */
-	protected function getPlugin()
-	{
-		return $GLOBALS['Eresus']->plugins->load('banners');
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Возвращает объект плагина
+     *
+     * @return Banners
+     *
+     * @since 3.00
+     */
+    protected function getPlugin()
+    {
+        return $GLOBALS['Eresus']->plugins->load('banners');
+    }
 }
 
