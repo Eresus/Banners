@@ -34,26 +34,23 @@
  */
 class Banners_Factory
 {
-	/**
-	 * Создаёт объект баннера из массива его свойств
-	 *
-	 * @param array $data
-	 * @return Banner  Объект баннера
-	 */
-	public static function createFromArray($data)
-	{
-		switch (true)
-		{
-			case $data['html'] != '':
-				return new Banners_Banner_Text($data);
-
-			case preg_match('/\.swf$/i', $data['image']):
-				return new Banners_Banner_Flash($data);
-
-			default:
-				return new Banners_Banner_Image($data);
-		}
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Создаёт объект баннера из массива его свойств
+     *
+     * @param array $data
+     * @return Banners_Banner_Abstract  Объект баннера
+     */
+    public static function createFromArray($data)
+    {
+        switch (true)
+        {
+            case $data['html'] != '':
+                return new Banners_Banner_Text($data);
+            case preg_match('/\.swf$/i', $data['image']):
+                return new Banners_Banner_Flash($data);
+            default:
+                return new Banners_Banner_Image($data);
+        }
+    }
 }
 
