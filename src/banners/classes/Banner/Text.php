@@ -32,14 +32,15 @@
  */
 class Banners_Banner_Text extends Banners_Banner_Abstract
 {
-	/**
-	 * Возвращает кода баннера для вставки на страницу
-	 *
-	 * @return string  HTML
-	 * @see AbstractBanner::render()
-	 */
-	public function render()
-	{
-		return $this->data['html'];
-	}
+    /**
+     * Возвращает кода баннера для вставки на страницу
+     *
+     * @return string  HTML
+     * @see AbstractBanner::render()
+     */
+    public function render()
+    {
+        return $this->data['html'];
+    }
 }
+
