@@ -492,8 +492,6 @@ class Banners extends Plugin
      */
     public function adminRender()
     {
-        $Eresus = Eresus_CMS::getLegacyKernel();
-        $request = $Eresus->request;
         /** @var TAdminUI $page */
         $page = Eresus_Kernel::app()->getPage();
         $result = '';
