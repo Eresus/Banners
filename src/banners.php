@@ -156,7 +156,7 @@ class Banners extends Plugin
     /**
      * Действия при установке плагина
      */
-    function install()
+    public function install()
     {
         parent::install();
 
@@ -340,7 +340,6 @@ class Banners extends Plugin
         {
             unlink($path.$item['image']);
         }
-        $item = $Eresus->db->selectItem($this->table['name'], "`".$this->table['key']."`='".$id."'");
         $Eresus->db->delete($this->table['name'], "`".$this->table['key']."`='".$id."'");
         HTTP::redirect(str_replace('&amp;', '&', Eresus_Kernel::app()->getPage()->url()));
     }
@@ -504,30 +503,33 @@ class Banners extends Plugin
                 "`".$this->table['key']."` = '".$request['arg']['id']."'");
             $page->title .= empty($item['caption'])?'':' - '.$item['caption'];
         }
-        if (isset($request['arg']['update']) && isset($this->table['controls']['edit']))
+        if (isset($request['arg']['update']))
         {
             $this->update();
         }
-        elseif (isset($request['arg']['toggle']) && isset($this->table['controls']['toggle']))
+        elseif (isset($request['arg']['toggle']))
         {
             $this->toggle($request['arg']['toggle']);
         }
-        elseif (isset($request['arg']['delete']) && isset($this->table['controls']['delete']))
+        elseif (isset($request['arg']['delete']))
         {
             $this->delete($request['arg']['delete']);
         }
-        elseif (isset($request['arg']['id']) && isset($this->table['controls']['edit']))
+        elseif (isset($request['arg']['id']))
         {
             $result = $this->edit();
         }
-        elseif (isset($request['arg']['action'])) switch ($request['arg']['action'])
+        elseif (isset($request['arg']['action']))
         {
-            case 'create':
-                $result = $this->create();
-                break;
-            case 'insert':
-                $this->insert();
-                break;
+            switch ($request['arg']['action'])
+            {
+                case 'create':
+                    $result = $this->create();
+                    break;
+                case 'insert':
+                    $this->insert();
+                    break;
+            }
         }
         else
         {
@@ -639,11 +641,12 @@ class Banners extends Plugin
             foreach ($blocks as $block)
             {
                 // Получаем баннеры для этого блока в порядке уменьшения приоритета
-                $query = $repo->getQuery()->
-                    activeOnly()->
-                    forSection($page->id)->
-                    forBlock($block[1][0 ])->
-                    orderBy('priority', ezcQuerySelect::DESC); // TODO!
+                $query = $repo->getQuery();
+                $query
+                    ->activeOnly()
+                    ->forSection($page->id)
+                    ->forBlock($block[1][0 ])
+                    ->orderBy('priority', ezcQuerySelect::DESC); // TODO!
                 $banners = $query->fetchAll();
                 if (count($banners))
                 {
