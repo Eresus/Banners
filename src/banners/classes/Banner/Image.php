@@ -58,5 +58,4 @@ class Banners_Banner_Image extends Banners_Banner_Abstract
 
 		return $html;
 	}
-	//-----------------------------------------------------------------------------
 }

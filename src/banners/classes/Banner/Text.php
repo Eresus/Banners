@@ -42,5 +42,4 @@ class Banners_Banner_Text extends Banners_Banner_Abstract
 	{
 		return $this->data['html'];
 	}
-	//-----------------------------------------------------------------------------
 }

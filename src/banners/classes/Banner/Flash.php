@@ -79,5 +79,4 @@ class Banners_Banner_Flash extends Banners_Banner_Abstract
 
 		return $html;
 	}
-	//-----------------------------------------------------------------------------
 }
