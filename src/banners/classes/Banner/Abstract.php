@@ -293,7 +293,7 @@ abstract class Banners_Banner_Abstract
      */
     protected function getPlugin()
     {
-        $plugin = $GLOBALS['Eresus']->plugins->load('banners');
+        $plugin = Eresus_CMS::getLegacyKernel()->plugins->load('banners');
         return $plugin;
     }
 }
