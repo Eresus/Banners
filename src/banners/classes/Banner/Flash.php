@@ -41,8 +41,6 @@ class Banners_Banner_Flash extends Banners_Banner_Abstract
      */
     public function render()
     {
-        global $Eresus, $page;
-
         $plugin = $this->getPlugin();
 
         $template =
@@ -60,6 +58,7 @@ class Banners_Banner_Flash extends Banners_Banner_Abstract
 
         if (!empty($this->data['url']))
         {
+            $page = Eresus_Kernel::app()->getPage();
             $page->linkStyles($plugin->getCodeURL() . 'main.css');
 
             $template =
@@ -70,6 +69,7 @@ class Banners_Banner_Flash extends Banners_Banner_Abstract
                     '%3$s' .
                     '</div>';
 
+            $Eresus = Eresus_CMS::getLegacyKernel();
             $url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
             $target = $this->data['target'] ? '' : ' target="_blank"';
             $stubImage = $Eresus->root . 'style/dot.gif';
