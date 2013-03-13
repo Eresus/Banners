@@ -36,186 +36,177 @@
  */
 class Banners_Query
 {
-	/**
-	 * Хранилище баннеров
-	 *
-	 * @var Banners_Repository
-	 */
-	protected $repo;
+    /**
+     * Хранилище баннеров
+     *
+     * @var Banners_Repository
+     */
+    protected $repo;
 
-	/**
-	 * Оригинальный запрос
-	 *
-	 * @var ezcQuerySelect
-	 */
-	protected $query;
+    /**
+     * Оригинальный запрос
+     *
+     * @var ezcQuerySelect
+     */
+    protected $query;
 
-	/**
-	 * Набор условий для WHERE
-	 *
-	 * При формировании запроса они будут соединены оператором AND
-	 *
-	 * @var array
-	 */
-	protected $where = array();
+    /**
+     * Набор условий для WHERE
+     *
+     * При формировании запроса они будут соединены оператором AND
+     *
+     * @var array
+     */
+    protected $where = array();
 
-	/**
-	 * Конструктор
-	 *
-	 * @param Banners_Repository $repo  хранилище баннеров
-	 *
-	 * @return Banners_Query
-	 */
-	public function __construct(Banners_Repository $repo)
-	{
-		$this->repo = $repo;
-		$this->query = DB::createSelectQuery()->select('*')->from('banners');
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Конструктор
+     *
+     * @param Banners_Repository $repo  хранилище баннеров
+     *
+     * @return Banners_Query
+     */
+    public function __construct(Banners_Repository $repo)
+    {
+        $this->repo = $repo;
+        $this->query = DB::createSelectQuery()->select('*')->from('banners');
+    }
 
-	/**
-	 * Часть шаблона «Декоратор»
-	 *
-	 * @param string $name
-	 *
-	 * @return mixed
-	 */
-	public function __get($name)
-	{
-		return $this->query->{$name};
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Часть шаблона «Декоратор»
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->query->{$name};
+    }
 
-	/**
-	 * Часть шаблона «Декоратор»
-	 *
-	 * @param string $name
-	 * @param mixed  $value
-	 *
-	 * @return void
-	 */
-	public function __set($name, $value)
-	{
-		$this->query->{$name} = $value;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Часть шаблона «Декоратор»
+     *
+     * @param string $name
+     * @param mixed  $value
+     *
+     * @return void
+     */
+    public function __set($name, $value)
+    {
+        $this->query->{$name} = $value;
+    }
 
-	/**
-	 * Часть шаблона «Декоратор»
-	 *
-	 * @param string $name
-	 * @param array  $args
-	 *
-	 * @return mixed
-	 */
-	public function __call($name, $args)
-	{
-		$result = call_user_func_array(array($this->query, $name), $args);
-		if ($result === $this->query)
-		{
-			$result = $this;
-		}
-		return $result;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Часть шаблона «Декоратор»
+     *
+     * @param string $name
+     * @param array  $args
+     *
+     * @return mixed
+     */
+    public function __call($name, $args)
+    {
+        $result = call_user_func_array(array($this->query, $name), $args);
+        if ($result === $this->query)
+        {
+            $result = $this;
+        }
+        return $result;
+    }
 
-	/**
-	 * Устанавливает значение для оператора WHERE
-	 *
-	 * @param string $sql
-	 *
-	 * @return Banners_Query  текучий интерфейс
-	 */
-	public function where($sql)
-	{
-		$this->where = array($sql);
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Устанавливает значение для оператора WHERE
+     *
+     * @param string $sql
+     *
+     * @return Banners_Query  текучий интерфейс
+     */
+    public function where($sql)
+    {
+        $this->where = array($sql);
+        return $this;
+    }
 
-	/**
-	 * Выбрать баннеры, привязанные к определённому разделу сайта
-	 *
-	 * @param int $section  раздел сайта
-	 *
-	 * @return Banners_Query  текучий интерфейс
-	 */
-	public function forSection($section)
-	{
-		$this->where []= "(section LIKE '%|$section|%' OR `section` LIKE '%|all|%')";
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Выбрать баннеры, привязанные к определённому разделу сайта
+     *
+     * @param int $section  раздел сайта
+     *
+     * @return Banners_Query  текучий интерфейс
+     */
+    public function forSection($section)
+    {
+        $this->where []= "(section LIKE '%|$section|%' OR `section` LIKE '%|all|%')";
+        return $this;
+    }
 
-	/**
-	 * Выбрать баннеры, привязанные к определённому блоку
-	 *
-	 * @param string $block  имя блока
-	 *
-	 * @return Banners_Query  текучий интерфейс
-	 */
-	public function forBlock($block)
-	{
-		$this->where []= "block = '$block'";
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Выбрать баннеры, привязанные к определённому блоку
+     *
+     * @param string $block  имя блока
+     *
+     * @return Banners_Query  текучий интерфейс
+     */
+    public function forBlock($block)
+    {
+        $this->where []= "block = '$block'";
+        return $this;
+    }
 
-	/**
-	 * Выбрать только активные баннеры
-	 *
-	 * Т. е. баннеры с установленным флагом «Активность» и срок которых начался и не истёк.
-	 *
-	 * @return Banners_Query  текучий интерфейс
-	 */
-	public function activeOnly()
-	{
-		$this->where []= "(showFrom <= '" . gettime() . "')";
-		$this->where []= "(showCount = 0 OR (shows < showCount) OR shows IS NULL)";
-		$this->where []= "(showTill = '0000-00-00' OR showTill IS NULL OR showTill > '" . gettime() .
-			"')";
-		$this->where []= '(active = 1)';
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Выбрать только активные баннеры
+     *
+     * Т. е. баннеры с установленным флагом «Активность» и срок которых начался и не истёк.
+     *
+     * @return Banners_Query  текучий интерфейс
+     */
+    public function activeOnly()
+    {
+        $this->where []= "(showFrom <= '" . gettime() . "')";
+        $this->where []= "(showCount = 0 OR (shows < showCount) OR shows IS NULL)";
+        $this->where []= "(showTill = '0000-00-00' OR showTill IS NULL OR showTill > '" . gettime() .
+            "')";
+        $this->where []= '(active = 1)';
+        return $this;
+    }
 
-	/**
-	 * Возвращает все баннеры, удовлетворяющие запросу
-	 *
-	 * @return array
-	 */
-	public function fetchAll()
-	{
-		$this->query->where(implode(' AND ', $this->where));
-		$records = DB::fetchAll($this->query);
-		$banners = array();
-		foreach ($records as $record)
-		{
-			$banner = Banners_Factory::createFromArray($record);
-			$banner = $this->repo->registerObject($banner);
-			$banners []= $banner;
-		}
-		return $banners;
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * Возвращает все баннеры, удовлетворяющие запросу
+     *
+     * @return array
+     */
+    public function fetchAll()
+    {
+        $this->query->where(implode(' AND ', $this->where));
+        $records = DB::fetchAll($this->query);
+        $banners = array();
+        foreach ($records as $record)
+        {
+            $banner = Banners_Factory::createFromArray($record);
+            $banner = $this->repo->registerObject($banner);
+            $banners []= $banner;
+        }
+        return $banners;
+    }
 
-	/**
-	 * Возвращает один баннер, удовлетворяющий запросу
-	 *
-	 * @return Banners_Banner_Abstract|null
-	 */
-	public function fetch()
-	{
-		$this->query->where(implode(' AND ', $this->where));
-		$record = DB::fetch($this->query);
+    /**
+     * Возвращает один баннер, удовлетворяющий запросу
+     *
+     * @return Banners_Banner_Abstract|null
+     */
+    public function fetch()
+    {
+        $this->query->where(implode(' AND ', $this->where));
+        $record = DB::fetch($this->query);
 
-		if (!$record)
-		{
-			return null;
-		}
+        if (!$record)
+        {
+            return null;
+        }
 
-		$banner = Banners_Factory::createFromArray($record);
-		return $banner;
-	}
-	//-----------------------------------------------------------------------------
+        $banner = Banners_Factory::createFromArray($record);
+        return $banner;
+    }
 }
+
