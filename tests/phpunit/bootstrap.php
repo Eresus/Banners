@@ -1,170 +1,60 @@
 <?php
 /**
-/**
- * Модульные тесты
+ * Стартовый файл тестов
  *
- * @version ${product.version}
- *
- * @copyright 2012, Михаил Красильников <mihalych@vsepofigu.ru>
- * @license http://www.gnu.org/licenses/gpl.txt	GPL License 3
- * @author Михаил Красильников <mihalych@vsepofigu.ru>
- *
- * Данная программа является свободным программным обеспечением. Вы
- * вправе распространять ее и/или модифицировать в соответствии с
- * условиями версии 3 либо (по вашему выбору) с условиями более поздней
- * версии Стандартной Общественной Лицензии GNU, опубликованной Free
- * Software Foundation.
- *
- * Мы распространяем эту программу в надежде на то, что она будет вам
- * полезной, однако НЕ ПРЕДОСТАВЛЯЕМ НА НЕЕ НИКАКИХ ГАРАНТИЙ, в том
- * числе ГАРАНТИИ ТОВАРНОГО СОСТОЯНИЯ ПРИ ПРОДАЖЕ и ПРИГОДНОСТИ ДЛЯ
- * ИСПОЛЬЗОВАНИЯ В КОНКРЕТНЫХ ЦЕЛЯХ. Для получения более подробной
- * информации ознакомьтесь со Стандартной Общественной Лицензией GNU.
- *
- * Вы должны были получить копию Стандартной Общественной Лицензии
- * GNU с этой программой. Если Вы ее не получили, смотрите документ на
- * <http://www.gnu.org/licenses/>
- *
- * @package Banners
+ * @package Eresus
  * @subpackage Tests
  */
 
+/**
+ * Путь к папке исходные кодов
+ */
 define('TESTS_SRC_DIR', realpath(__DIR__ . '/../../src'));
 
-/**
- * Универсальная заглушка
- *
- * @package Banners
- * @subpackage Tests
+/*
+ * Автозагрузка классов модуля
  */
-class UniversalStub implements ArrayAccess
+
+$pluginName = basename(realpath(TESTS_SRC_DIR . '/..'));
+
+$autoload = __DIR__ . '/../../vendor/autoload.php';
+
+if (file_exists($autoload))
+/* Если доступен Composer, используем его автозагрузчик */
 {
-	public function __get($a)
-	{
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
-
-	public function __call($a, $b)
-	{
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
-
-	public function offsetExists($offset)
-	{
-		return true;
-	}
-	//-----------------------------------------------------------------------------
-
-	public function offsetGet($offset)
-	{
-		return $this;
-	}
-	//-----------------------------------------------------------------------------
-
-	public function offsetSet($offset, $value)
-	{
-		;
-	}
-	//-----------------------------------------------------------------------------
-
-	public function offsetUnset($offset)
-	{
-		;
-	}
-	//-----------------------------------------------------------------------------
-
-	public function __toString()
-	{
-		return '';
-	}
-	//-----------------------------------------------------------------------------
+    /** @noinspection PhpIncludeInspection */
+    $autoloader = include $autoload;
+    /** @var Composer\Autoload\ClassLoader $autoloader */
+    $autoloader->addClassMap(
+        array($pluginName => TESTS_SRC_DIR . '/' .strtolower($pluginName) . '.php')
+    );
+    $autoloader->add($pluginName . '_', TESTS_SRC_DIR . '/classes');
+}
+else
+/* Если Composer-а нет, используем свой автозагрузчик */
+{
+    spl_autoload_register(
+        function ($class) use ($pluginName)
+        {
+            $filename = TESTS_SRC_DIR . '/' . strtolower($pluginName);
+            if (substr($class, 0, strlen($pluginName) + 1) == $pluginName . '_')
+            {
+                $filename .= '/classes/'
+                    . str_replace('_', '/', substr($class, strlen($pluginName)));
+            }
+            elseif ($class != $pluginName)
+            {
+                return;
+            }
+            $filename .= '.php';
+            if (file_exists($filename))
+            {
+                /** @noinspection PhpIncludeInspection */
+                require $filename;
+            }
+        }
+    );
 }
 
+require_once 'stubs.php';
 
-
-/**
- * Фасад к моку для эмуляции статичных методов
- *
- * @package [Имя пакета]
- * @subpackage Tests
- */
-class MockFacade
-{
-	/**
-	 * Мок
-	 *
-	 * @var object
-	 */
-	private static $mock;
-
-	/**
-	 * Устанавливает мок
-	 *
-	 * @param object $mock
-	 *
-	 * @return void
-	 *
-	 * @since 2.16
-	 */
-	public static function setMock($mock)
-	{
-		self::$mock = $mock;
-	}
-	//-----------------------------------------------------------------------------
-
-	/**
-	 * Вызывает метод мока
-	 *
-	 * @param string $method
-	 * @param array  $args
-	 *
-	 * @return void
-	 *
-	 * @since 2.16
-	 */
-	public static function __callstatic($method, $args)
-	{
-		if (self::$mock && method_exists(self::$mock, $method))
-		{
-			return call_user_func_array(array(self::$mock, $method), $args);
-		}
-
-		return new UniversalStub();
-	}
-	//-----------------------------------------------------------------------------
-}
-
-
-/**
- * Заглушка для класса Plugin
- *
- * @package [Имя пакета]
- * @subpackage Tests
- */
-class Plugin extends UniversalStub {}
-
-/**
- * Заглушка для класса DB
- *
- * @package [Имя пакета]
- * @subpackage Tests
- */
-class DB extends MockFacade {}
-
-/**
- * Заглушка для класса ezcQuery
- *
- * @package [Имя пакета]
- * @subpackage Tests
- */
-class ezcQuery extends UniversalStub {}
-
-/**
- * Заглушка для класса ezcQuerySelect
- *
- * @package [Имя пакета]
- * @subpackage Tests
- */
-class ezcQuerySelect extends ezcQuery {}
