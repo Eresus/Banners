@@ -42,7 +42,7 @@ class Banners_Banner_Image extends Banners_Banner_Abstract
     {
         $plugin = $this->getPlugin();
 
-        $html = img($plugin->getDataDir() . $this->data['image']);
+        $html = img($plugin->getDataDir() . '/' . $this->data['image']);
 
         if (!empty($this->data['url']))
         {

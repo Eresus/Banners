@@ -136,18 +136,6 @@ class Banners extends Eresus_Plugin
     }
 
     /**
-     * Возвращает путь к директории данных плагина
-     *
-     * @return string
-     *
-     * @since 2.00
-     */
-    public function getDataDir()
-    {
-        return $this->dirData;
-    }
-
-    /**
      * Действия при установке плагина
      */
     public function install()
