@@ -35,13 +35,13 @@
  *
  * @package Banners
  */
-class Banners extends Plugin
+class Banners extends Eresus_Plugin
 {
     /**
      * Требуемая версия ядра
      * @var string
      */
-    public $kernel = '3.00a';
+    public $kernel = '3.01a';
 
     /**
      * Название плагина
