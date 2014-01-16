@@ -45,10 +45,10 @@ class Banners_Banner_Flash extends Banners_Banner_Abstract
 
         $template =
             '<object type="application/x-shockwave-flash" data="%s" width="%d" height="%d">' .
-                '<param name="movie" value="%1$s" />' .
-                '<param name="quality" value="high" />' .
-                '<param name="wmode" value="opaque" />' .
-                '</object>';
+            '<param name="movie" value="%1$s" />' .
+            '<param name="quality" value="high" />' .
+            '<param name="wmode" value="opaque" />' .
+            '</object>';
 
         $swf = $plugin->getDataURL() . $this->data['image'];
         $width = $this->data['width'];
@@ -63,14 +63,14 @@ class Banners_Banner_Flash extends Banners_Banner_Abstract
 
             $template =
                 '<div class="banners-swf-container">' .
-                    '<div class="banners-swf-overlay">' .
-                    '<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
-                    '</div>' .
-                    '%3$s' .
-                    '</div>';
+                '<div class="banners-swf-overlay">' .
+                '<a href="%1$s"%2$s><img src="%4$s" alt="" width="%5$d" height="%6$d" /></a>' .
+                '</div>' .
+                '%3$s' .
+                '</div>';
 
             $Eresus = Eresus_CMS::getLegacyKernel();
-            $url = $Eresus->request['path'] . '?banners-click=' .	$this->data['id'];
+            $url = $Eresus->request['path'] . '?banners-click=' . $this->data['id'];
             $target = $this->data['target'] ? '' : ' target="_blank"';
             $stubImage = $Eresus->root . 'style/dot.gif';
 

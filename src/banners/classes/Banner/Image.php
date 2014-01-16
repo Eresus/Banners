@@ -49,7 +49,7 @@ class Banners_Banner_Image extends Banners_Banner_Abstract
             $template = '<a href="%s"%s>%s</a>';
 
             $url = Eresus_CMS::getLegacyKernel()->request['path'] . '?banners-click='
-                .	$this->data['id'];
+                . $this->data['id'];
             $target = $this->data['target'] ? '' : ' target="_blank"';
 
             $html = sprintf($template, $url, $target, $html);
