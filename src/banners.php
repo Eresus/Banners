@@ -50,12 +50,6 @@ class Banners extends Eresus_Plugin
     public $title = 'Баннеры';
 
     /**
-     * Тип
-     * @var string
-     */
-    public $type = 'client,admin';
-
-    /**
      * Версия
      * @var string
      */
