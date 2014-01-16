@@ -30,7 +30,6 @@
 
 
 require_once __DIR__ . '/bootstrap.php';
-require_once TESTS_SRC_DIR . '/banners.php';
 
 /**
  * @package Banners
@@ -38,12 +37,11 @@ require_once TESTS_SRC_DIR . '/banners.php';
  */
 class Banners_Test extends PHPUnit_Framework_TestCase
 {
-	/**
-	 * @covers Banners::__construct
-	 */
-	public function test_construct()
-	{
-
-	}
-	//-----------------------------------------------------------------------------
+    /**
+     * @covers Banners::__construct
+     */
+    public function testConstruct()
+    {
+    }
 }
+

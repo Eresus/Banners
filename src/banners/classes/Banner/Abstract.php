@@ -84,7 +84,7 @@ abstract class Banners_Banner_Abstract
      */
     public function getActive()
     {
-        return (bool) $this->data['active'];
+        return (bool)$this->data['active'];
     }
 
     /**
@@ -228,7 +228,7 @@ abstract class Banners_Banner_Abstract
      */
     public function getTargetIsBlank()
     {
-        return (bool) $this->data['target'];
+        return (bool)$this->data['target'];
     }
 
     /**

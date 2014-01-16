@@ -65,7 +65,7 @@ class Banners_Query
     /**
      * Конструктор
      *
-     * @param Banners_Repository $repo  хранилище баннеров
+     * @param Banners_Repository $repo хранилище баннеров
      *
      * @return Banners_Query
      */
@@ -93,7 +93,7 @@ class Banners_Query
      * Часть шаблона «Декоратор»
      *
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return void
      */
@@ -106,7 +106,7 @@ class Banners_Query
      * Часть шаблона «Декоратор»
      *
      * @param string $name
-     * @param array  $args
+     * @param array $args
      *
      * @return mixed
      */
@@ -136,26 +136,26 @@ class Banners_Query
     /**
      * Выбрать баннеры, привязанные к определённому разделу сайта
      *
-     * @param int $section  раздел сайта
+     * @param int $section раздел сайта
      *
      * @return Banners_Query  текучий интерфейс
      */
     public function forSection($section)
     {
-        $this->where []= "(section LIKE '%|$section|%' OR `section` LIKE '%|all|%')";
+        $this->where [] = "(section LIKE '%|$section|%' OR `section` LIKE '%|all|%')";
         return $this;
     }
 
     /**
      * Выбрать баннеры, привязанные к определённому блоку
      *
-     * @param string $block  имя блока
+     * @param string $block имя блока
      *
      * @return Banners_Query  текучий интерфейс
      */
     public function forBlock($block)
     {
-        $this->where []= "block = '$block'";
+        $this->where [] = "block = '$block'";
         return $this;
     }
 
@@ -168,11 +168,11 @@ class Banners_Query
      */
     public function activeOnly()
     {
-        $this->where []= "(showFrom <= '" . gettime() . "')";
-        $this->where []= "(showCount = 0 OR (shows < showCount) OR shows IS NULL)";
-        $this->where []= "(showTill = '0000-00-00' OR showTill IS NULL OR showTill > '" . gettime() .
+        $this->where [] = "(showFrom <= '" . gettime() . "')";
+        $this->where [] = "(showCount = 0 OR (shows < showCount) OR shows IS NULL)";
+        $this->where [] = "(showTill = '0000-00-00' OR showTill IS NULL OR showTill > '" . gettime() .
             "')";
-        $this->where []= '(active = 1)';
+        $this->where [] = '(active = 1)';
         return $this;
     }
 
@@ -190,7 +190,7 @@ class Banners_Query
         {
             $banner = Banners_Factory::createFromArray($record);
             $banner = $this->repo->registerObject($banner);
-            $banners []= $banner;
+            $banners [] = $banner;
         }
         return $banners;
     }

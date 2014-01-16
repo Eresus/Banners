@@ -35,25 +35,19 @@
  *
  * @package Banners
  */
-class Banners extends Plugin
+class Banners extends Eresus_Plugin
 {
     /**
      * Требуемая версия ядра
      * @var string
      */
-    public $kernel = '3.00a';
+    public $kernel = '3.01a';
 
     /**
      * Название плагина
      * @var string
      */
     public $title = 'Баннеры';
-
-    /**
-     * Тип
-     * @var string
-     */
-    public $type = 'client,admin';
 
     /**
      * Версия
@@ -71,35 +65,35 @@ class Banners extends Plugin
      * Таблица АИ
      * @var array
      */
-    private $table = array (
+    private $table = array(
         'name' => 'banners',
-        'key'=> 'id',
+        'key' => 'id',
         'sortMode' => 'id',
         'sortDesc' => false,
         'columns' => array(
             array('name' => 'caption', 'caption' => 'Название'),
-            array('name' => 'block', 'caption' => 'Блок', 'align'=> 'right'),
+            array('name' => 'block', 'caption' => 'Блок', 'align' => 'right'),
             array('name' => 'priority',
                 'caption' => '<span title="Приоритет" style="cursor: default;">&nbsp;&nbsp;*</span>',
-                'align'=>'center'),
+                'align' => 'center'),
             array('name' => 'showTill', 'caption' => 'До даты',
-                'replace'=> array('0000-00-00'=> 'без огранич.')),
-            array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align'=>'right',
-                'replace' => array('0'=> 'без огранич.')),
-            array('name' => 'shows', 'caption' => 'Показан', 'align'=>'right'),
-            array('name' => 'clicks', 'caption' => 'Кликов', 'align'=>'right'),
+                'replace' => array('0000-00-00' => 'без огранич.')),
+            array('name' => 'showCount', 'caption' => 'Макс.показ.', 'align' => 'right',
+                'replace' => array('0' => 'без огранич.')),
+            array('name' => 'shows', 'caption' => 'Показан', 'align' => 'right'),
+            array('name' => 'clicks', 'caption' => 'Кликов', 'align' => 'right'),
             //array('name' => 'mail', 'caption' => 'Владелец',
             //'value' => '<a href="mailto:$(mail)">$(mail)</a>', 'macros' => true),
         ),
-        'controls' => array (
+        'controls' => array(
             'delete' => '',
             'edit' => '',
             'toggle' => '',
         ),
         'tabs' => array(
-            'width'=>'180px',
-            'items'=>array(
-                array('caption'=>'Добавить баннер', 'name'=>'action', 'value'=>'create')
+            'width' => '180px',
+            'items' => array(
+                array('caption' => 'Добавить баннер', 'name' => 'action', 'value' => 'create')
             ),
         ),
         'sql' => "(
@@ -142,18 +136,6 @@ class Banners extends Plugin
     }
 
     /**
-     * Возвращает путь к директории данных плагина
-     *
-     * @return string
-     *
-     * @since 2.00
-     */
-    public function getDataDir()
-    {
-        return $this->dirData;
-    }
-
-    /**
      * Действия при установке плагина
      */
     public function install()
@@ -185,7 +167,7 @@ class Banners extends Plugin
             {
                 $result[0][] = str_repeat('- ', $level) . $item['caption'];
                 $result[1][] = $item['id'];
-                $sub = $this->menuBranch($item['id'], $level+1);
+                $sub = $this->menuBranch($item['id'], $level + 1);
                 if (count($sub[0]))
                 {
                     $result[0] = array_merge($result[0], $sub[0]);
@@ -210,7 +192,7 @@ class Banners extends Plugin
         $item['active'] = arg('active', 'int');
         if (arg('section'))
         {
-            $item['section'] = '|'.implode('|', arg('section')).'|';
+            $item['section'] = '|' . implode('|', arg('section')) . '|';
         }
         $item['block'] = arg('block', 'dbsafe');
         $item['priority'] = arg('priority', 'int');
@@ -233,10 +215,10 @@ class Banners extends Plugin
         if (is_uploaded_file($_FILES['image']['tmp_name']))
         {
             $filename = 'banner' . $item['id'] . substr($_FILES['image']['name'],
-                strrpos($_FILES['image']['name'], '.'));
+                    strrpos($_FILES['image']['name'], '.'));
             upload('image', $Eresus->fdata . $this->name . '/' . $filename);
             $item['image'] = $filename;
-            $Eresus->db->updateItem($this->table['name'], $item, "`id`='" . $item['id']."'");
+            $Eresus->db->updateItem($this->table['name'], $item, "`id`='" . $item['id'] . "'");
         }
         HTTP::redirect(arg('submitURL'));
     }
@@ -249,13 +231,13 @@ class Banners extends Plugin
     {
         $Eresus = Eresus_CMS::getLegacyKernel();
 
-        $item = $Eresus->db->selectItem($this->table['name'], "`id`='". arg('update')."'");
+        $item = $Eresus->db->selectItem($this->table['name'], "`id`='" . arg('update') . "'");
         $old_file = $item['image'];
         $item['caption'] = arg('caption', 'dbsafe');
         $item['active'] = arg('active', 'int');
         if (arg('section'))
         {
-            $item['section'] = '|'.implode('|', arg('section')).'|';
+            $item['section'] = '|' . implode('|', arg('section')) . '|';
         }
         $item['block'] = arg('block', 'dbsafe');
         $item['priority'] = arg('priority', 'int');
@@ -279,24 +261,24 @@ class Banners extends Plugin
         }
         if (is_uploaded_file($_FILES['image']['tmp_name']))
         {
-            $path = $Eresus->fdata . $this->name.'/';
-            if (is_file($path.$old_file))
+            $path = $Eresus->fdata . $this->name . '/';
+            if (is_file($path . $old_file))
             {
-                unlink($path.$old_file);
+                unlink($path . $old_file);
             }
             $filename = 'banner' . $item['id'] .
                 substr($_FILES['image']['name'], strrpos($_FILES['image']['name'], '.'));
-            upload('image', $path.$filename);
+            upload('image', $path . $filename);
             $item['image'] = $filename;
         }
 
-        $Eresus->db->updateItem($this->table['name'], $item, "`id`='".$item['id']."'");
+        $Eresus->db->updateItem($this->table['name'], $item, "`id`='" . $item['id'] . "'");
 
         if ($item['showTill'] == '')
         {
             $Eresus->db->query(
-                "UPDATE ".$Eresus->db->prefix . $this->table['name'].
-                    " SET `showTill` = NULL WHERE `id`='".$item['id']."'");
+                "UPDATE " . $Eresus->db->prefix . $this->table['name'] .
+                " SET `showTill` = NULL WHERE `id`='" . $item['id'] . "'");
         }
 
         HTTP::redirect(arg('submitURL'));
@@ -312,11 +294,11 @@ class Banners extends Plugin
     {
         $Eresus = Eresus_CMS::getLegacyKernel();
 
-        $item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
+        $item = $Eresus->db->selectItem($this->table['name'], "`id`='" . $id . "'");
         $item['active'] = !$item['active'];
 
         $item = $Eresus->db->escape($item);
-        $Eresus->db->updateItem($this->table['name'], $item, "`id`='".$id."'");
+        $Eresus->db->updateItem($this->table['name'], $item, "`id`='" . $id . "'");
 
         HTTP::redirect(Eresus_Kernel::app()->getPage()->url());
     }
@@ -331,16 +313,16 @@ class Banners extends Plugin
     {
         $Eresus = Eresus_CMS::getLegacyKernel();
 
-        $item = $Eresus->db->selectItem($this->table['name'], "`id`='".$id."'");
-        $path = $Eresus->fdata . $this->name.'/';
+        $item = $Eresus->db->selectItem($this->table['name'], "`id`='" . $id . "'");
+        $path = $Eresus->fdata . $this->name . '/';
         if (
             !empty($item['image']) &&
-            file_exists($path.$item['image'])
+            file_exists($path . $item['image'])
         )
         {
-            unlink($path.$item['image']);
+            unlink($path . $item['image']);
         }
-        $Eresus->db->delete($this->table['name'], "`".$this->table['key']."`='".$id."'");
+        $Eresus->db->delete($this->table['name'], "`" . $this->table['key'] . "`='" . $id . "'");
         HTTP::redirect(str_replace('&amp;', '&', Eresus_Kernel::app()->getPage()->url()));
     }
 
@@ -358,47 +340,47 @@ class Banners extends Plugin
             'name' => 'formCreate',
             'caption' => 'Добавить баннер',
             'width' => '600px',
-            'fields' => array (
-                array ('type'=>'hidden','name'=>'action', 'value'=>'insert'),
-                array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
-                    'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
-                    'errormsg'=>'Заголовок не может быть пустым!'),
-                array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
-                    'items'=>$sections[0], 'values'=>$sections[1]),
-                array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+            'fields' => array(
+                array('type' => 'hidden', 'name' => 'action', 'value' => 'insert'),
+                array('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+                    'width' => '100%', 'maxlength' => '255', 'pattern' => '/.+/',
+                    'errormsg' => 'Заголовок не может быть пустым!'),
+                array('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height' => 5,
+                    'items' => $sections[0], 'values' => $sections[1]),
+                array('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
                     'width' => '100px', 'maxlength' => 31,
                     'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
-                    'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-                array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
+                    'pattern' => '/.+/', 'errormsg' => 'Не указан блок баннера!'),
+                array('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
                     'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет ' .
                         'показан с большим приоритетом',
-                    'default'=>0, 'pattern'=>'/\d+/', 'errormsg'=>'Приоритет задается только цифрами!'),
-                array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
-                    'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
-                    'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-                array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
+                    'default' => 0, 'pattern' => '/\d+/', 'errormsg' => 'Приоритет задается только цифрами!'),
+                array('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
+                    'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default' => gettime('Y-m-d'),
+                    'pattern' => '/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg' => 'Неправильный формат даты!'),
+                array('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
                     'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
-                    'pattern'=>'/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/',
-                    'errormsg'=>'Неправильный формат даты!'),
-                array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
-                    'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
-                    'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
+                    'pattern' => '/([12]\d{3,3}-[01]\d-[0-3]\d)|(^$)/',
+                    'errormsg' => 'Неправильный формат даты!'),
+                array('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
+                    'width' => '100px', 'comment' => '0 - без ограничений', 'default' => 0,
+                    'pattern' => '/(\d+)|(^$)/', 'errormsg' => 'Кол-во показов задается только цифрами!'),
                 /*array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
                     'width' => '200px', 'maxlength' => '63'),*/
-                array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать',
+                array('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать',
                     'default' => true),
-                array ('type' => 'header', 'value' => 'Свойства баннера'),
-                array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50'),
-                array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
-                    'comment'=>'только для Flash'),
-                array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
-                    'comment'=>'только для Flash'),
-                array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+                array('type' => 'header', 'value' => 'Свойства баннера'),
+                array('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width' => '50'),
+                array('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
+                    'comment' => 'только для Flash'),
+                array('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
+                    'comment' => 'только для Flash'),
+                array('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
                     'maxlength' => '255'),
-                array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
-                    'items'=>array('в новом окне', 'в том же окне')),
-                array ('type' => 'header', 'value' => 'HTML-код баннера'),
-                array ('type' => 'memo', 'name' => 'html',
+                array('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
+                    'items' => array('в новом окне', 'в том же окне')),
+                array('type' => 'header', 'value' => 'HTML-код баннера'),
+                array('type' => 'memo', 'name' => 'html',
                     'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут ' .
                         'не заполняться)',
                     'height' => '4'),
@@ -420,7 +402,7 @@ class Banners extends Plugin
     private function edit()
     {
         $Eresus = Eresus_CMS::getLegacyKernel();
-        $item = $Eresus->db->selectItem($this->table['name'], "`id`='" . arg ('id') . "'");
+        $item = $Eresus->db->selectItem($this->table['name'], "`id`='" . arg('id') . "'");
         $item['section'] = explode('|', $item['section']);
         $sections = $this->menuBranch();
         array_unshift($sections[0], 'ВСЕ РАЗДЕЛЫ');
@@ -429,51 +411,51 @@ class Banners extends Plugin
             'name' => 'formEdit',
             'caption' => 'Изменить баннер',
             'width' => '95%',
-            'fields' => array (
-                array ('type' => 'hidden','name'=>'update', 'value'=>$item['id']),
-                array ('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
-                    'width' => '100%', 'maxlength' => '255', 'pattern'=>'/.+/',
-                    'errormsg'=>'Заголовок не может быть пустым!'),
-                array ('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height'=> 5,
-                    'items'=>$sections[0], 'values'=>$sections[1]),
-                array ('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
+            'fields' => array(
+                array('type' => 'hidden', 'name' => 'update', 'value' => $item['id']),
+                array('type' => 'edit', 'name' => 'caption', 'label' => '<b>Заголовок</b>',
+                    'width' => '100%', 'maxlength' => '255', 'pattern' => '/.+/',
+                    'errormsg' => 'Заголовок не может быть пустым!'),
+                array('type' => 'listbox', 'name' => 'section', 'label' => '<b>Разделы</b>', 'height' => 5,
+                    'items' => $sections[0], 'values' => $sections[1]),
+                array('type' => 'edit', 'name' => 'block', 'label' => '<b>Блок баннера</b>',
                     'width' => '100px', 'maxlength' => 15,
                     'comment' => 'Для вставки баннера используйте макрос <b>$(Banners:имя_блока)</b>',
-                    'pattern'=>'/.+/', 'errormsg'=>'Не указан блок баннера!'),
-                array ('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
+                    'pattern' => '/.+/', 'errormsg' => 'Не указан блок баннера!'),
+                array('type' => 'edit', 'name' => 'priority', 'label' => 'Приоритет', 'width' => '20px',
                     'comment' => 'Если для одного раздела и одного блока задано несколько баннеров, будет ' .
-                        'показан с большим приоритетом', 'default'=>0, 'pattern'=>'/\d+/',
-                    'errormsg'=>'Приоритет задается только цифрами!'),
-                array ('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
-                    'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default'=>gettime('Y-m-d'),
-                    'pattern'=>'/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg'=>'Неправильный формат даты!'),
-                array ('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
+                        'показан с большим приоритетом', 'default' => 0, 'pattern' => '/\d+/',
+                    'errormsg' => 'Приоритет задается только цифрами!'),
+                array('type' => 'edit', 'name' => 'showFrom', 'label' => 'Начало показов',
+                    'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД', 'default' => gettime('Y-m-d'),
+                    'pattern' => '/[12]\d{3,3}-[01]\d-[0-3]\d/', 'errormsg' => 'Неправильный формат даты!'),
+                array('type' => 'edit', 'name' => 'showTill', 'label' => 'Конец показов',
                     'width' => '100px', 'comment' => 'ГГГГ-ММ-ДД; Пустое - без ограничений',
-                    'pattern'=>'/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg'=>'Неправильный формат даты!'),
-                array ('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
-                    'width' => '100px', 'comment' => '0 - без ограничений', 'default'=>0,
-                    'pattern'=>'/(\d+)|(^$)/', 'errormsg'=>'Кол-во показов задается только цифрами!'),
+                    'pattern' => '/(\d{4,4}-[01]\d-[0-3]\d)|(^$)/', 'errormsg' => 'Неправильный формат даты!'),
+                array('type' => 'edit', 'name' => 'showCount', 'label' => 'Макс. кол-во показов',
+                    'width' => '100px', 'comment' => '0 - без ограничений', 'default' => 0,
+                    'pattern' => '/(\d+)|(^$)/', 'errormsg' => 'Кол-во показов задается только цифрами!'),
                 //array ('type' => 'edit', 'name' => 'mail', 'label' => 'e-mail владельца',
                 //'width' => '200px', 'maxlength' => '63'),
-                array ('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
-                array ('type' => 'header', 'value' => 'Свойства баннера'),
-                array ('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width'=>'50',
+                array('type' => 'checkbox', 'name' => 'active', 'label' => 'Активировать'),
+                array('type' => 'header', 'value' => 'Свойства баннера'),
+                array('type' => 'file', 'name' => 'image', 'label' => 'Картинка или Flash', 'width' => '50',
                     'comment' => '<a></a>'),
-                array ('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
-                    'comment'=>'только для Flash'),
-                array ('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
-                    'comment'=>'только для Flash'),
-                array ('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
+                array('type' => 'edit', 'name' => 'width', 'label' => 'Ширина', 'width' => '100px',
+                    'comment' => 'только для Flash'),
+                array('type' => 'edit', 'name' => 'height', 'label' => 'Высота', 'width' => '100px',
+                    'comment' => 'только для Flash'),
+                array('type' => 'edit', 'name' => 'url', 'label' => 'URL для ссылки', 'width' => '100%',
                     'maxlength' => '255'),
-                array ('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
-                    'items'=>array('в новом окне', 'в том же окне')),
-                array ('type' => 'header', 'value' => 'HTML-код баннера'),
-                array ('type' => 'memo', 'name' => 'html',
+                array('type' => 'select', 'name' => 'target', 'label' => 'Открывать',
+                    'items' => array('в новом окне', 'в том же окне')),
+                array('type' => 'header', 'value' => 'HTML-код баннера'),
+                array('type' => 'memo', 'name' => 'html',
                     'label' => 'HTML-код (Если задан HTML-код, то предыдущие свойства игнорируются и могут' .
                         'не заполняться)',
                     'height' => '4'),
-                array ('type' => 'divider'),
-                array ('type' => 'checkbox', 'name' => 'flushShowCount',
+                array('type' => 'divider'),
+                array('type' => 'checkbox', 'name' => 'flushShowCount',
                     'label' => 'Обнулить кол-во показов'),
             ),
             'buttons' => array('ok', 'apply', 'cancel'),
@@ -550,7 +532,7 @@ class Banners extends Plugin
     /**
      * Отрисовка баннеров и обработка кликов
      *
-     * @param string $text  HTML страницы
+     * @param string $text HTML страницы
      * @return string  HTML страницы
      */
     public function clientOnPageRender($text)
@@ -591,7 +573,7 @@ class Banners extends Plugin
                 $query
                     ->activeOnly()
                     ->forSection($page->id)
-                    ->forBlock($block[1][0 ])
+                    ->forBlock($block[1][0])
                     ->orderBy('priority', ezcQuerySelect::DESC); // TODO!
                 $banners = $query->fetchAll();
                 if (count($banners))
@@ -608,7 +590,7 @@ class Banners extends Plugin
                     }
 
                     // Выбираем случайный баннер
-                    $banner = $banners[mt_rand(0, count($banners)-1)];
+                    $banner = $banners[mt_rand(0, count($banners) - 1)];
                     $banner->incShows();
                     $repo->save($banner);
 
@@ -619,7 +601,7 @@ class Banners extends Plugin
             }
             $items = $Eresus->db->select($this->table['name'],
                 "`active` = 1 AND (`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" .
-                    gettime() . "') AND (`showTill` != '0000-00-00'))");
+                gettime() . "') AND (`showTill` != '0000-00-00'))");
             if (count($items))
             {
                 foreach ($items as $item)
@@ -631,7 +613,7 @@ class Banners extends Plugin
                 }
                 $Eresus->db->update($this->table['name'],
                     "`active`='0'", "(`showCount` != 0 AND `shows` > `showCount`) AND ((`showTill` < '" .
-                        gettime() . "') AND (`showTill` != '0000-00-00'))");
+                    gettime() . "') AND (`showTill` != '0000-00-00'))");
             }
         }
         return $text;
@@ -652,7 +634,7 @@ class Banners extends Plugin
     /**
      * Перенаправляет посетителя на URL, заданный баннером
      *
-     * @param int $id  Идентификатор баннера
+     * @param int $id Идентификатор баннера
      */
     private function processClick($id)
     {
